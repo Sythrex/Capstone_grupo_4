@@ -1,15 +1,23 @@
+using Infrastructure.Persistence;          // <-- agregar
+using Microsoft.EntityFrameworkCore;       // <-- agregar
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// MVC
 builder.Services.AddControllersWithViews();
+
+// DbContext (lee la cadena desde appsettings.*)
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlServer(cs)                    // Usa SQL Server
+);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline HTTP
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -25,3 +33,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+
+//dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=tcp:<tu-servidor>.database.windows.net,1433;Initial Catalog=<tu_bd>;User ID=<tu_usuario>;Password=<tu_password>;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
