@@ -1,12 +1,10 @@
-using Infrastructure.Persistence;          // <-- agregar
-using Microsoft.EntityFrameworkCore;       // <-- agregar
+using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// MVC
 builder.Services.AddControllersWithViews();
 
-// DbContext (lee la cadena desde appsettings.*)
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(cs)                    // Usa SQL Server
