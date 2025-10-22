@@ -1,0 +1,50 @@
+﻿@model Infrastructure.Persistence.Models.cliente
+@{
+    ViewData["Title"] = "Editar Cliente";
+}
+
+<h1 class="mb-4">Editar Cliente</h1>
+
+<form asp-action="Edit" method="post" class="row g-3">
+    <input type="hidden" asp-for="id" />
+
+    <div class="col-md-4">
+        <label asp-for="rut" class="form-label"></label>
+        <input asp-for="rut" class="form-control" />
+        <span asp-validation-for="rut" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="nombre" class="form-label"></label>
+        <input asp-for="nombre" class="form-control" />
+        <span asp-validation-for="nombre" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="correo" class="form-label"></label>
+        <input asp-for="correo" class="form-control" />
+        <span asp-validation-for="correo" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="telefono" class="form-label"></label>
+        <input asp-for="telefono" class="form-control" />
+        <span asp-validation-for="telefono" class="text-danger"></span>
+    </div>
+    <div class="col-md-8">
+        <label asp-for="direccion" class="form-label"></label>
+        <input asp-for="direccion" class="form-control" />
+        <span asp-validation-for="direccion" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="comuna_id" class="form-label"></label>
+        <input asp-for="comuna_id" class="form-control" />
+        <span asp-validation-for="comuna_id" class="text-danger"></span>
+    </div>
+
+    <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        <a class="btn btn-secondary" asp-action="Index">Volver</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
