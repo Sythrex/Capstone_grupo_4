@@ -33,6 +33,3 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-
-//dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=tcp:<tu-servidor>.database.windows.net,1433;Initial Catalog=<tu_bd>;User ID=<tu_usuario>;Password=<tu_password>;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
