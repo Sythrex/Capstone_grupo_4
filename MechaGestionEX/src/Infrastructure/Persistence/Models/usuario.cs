@@ -9,6 +9,8 @@ public partial class usuario
 
     public string password_hash { get; set; } = null!;
 
+    public string nombre_usuario { get; set; } = null!;
+
     public int? cliente_id { get; set; }
 
     public int? funcionario_id { get; set; }

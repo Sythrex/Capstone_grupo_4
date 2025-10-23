@@ -6,8 +6,8 @@ namespace Web.Controllers;
 [Route("health")]
 public class HealthController : Controller
 {
-    private readonly AppDbContext _db;
-    public HealthController(AppDbContext db) => _db = db;
+    private readonly TallerMecanicoContext _db;
+    public HealthController(TallerMecanicoContext db) => _db = db;
 
     [HttpGet("db")]
     public async Task<IActionResult> Db()

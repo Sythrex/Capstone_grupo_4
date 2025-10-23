@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
-public partial class AppDbContext : DbContext
+public partial class TallerMecanicoContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options)
+    public TallerMecanicoContext(DbContextOptions<TallerMecanicoContext> options)
         : base(options)
     {
     }

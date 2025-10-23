@@ -8,8 +8,8 @@ namespace Web.Controllers;
 [Route("clientes")]
 public class ClientesController : Controller
 {
-    private readonly AppDbContext _db;
-    public ClientesController(AppDbContext db) => _db = db;
+    private readonly TallerMecanicoContext _db;
+    public ClientesController(TallerMecanicoContext db) => _db = db;
 
     // GET: /clientes
     [HttpGet("")]
