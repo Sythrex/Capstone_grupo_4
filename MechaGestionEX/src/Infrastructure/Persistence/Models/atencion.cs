@@ -44,4 +44,6 @@ public partial class atencion
     public virtual taller taller { get; set; } = null!;
 
     public virtual vehiculo? vehiculo { get; set; }
+
+    public int agenda_id { get; set; }
 }
