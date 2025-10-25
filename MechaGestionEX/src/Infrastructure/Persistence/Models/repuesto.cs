@@ -19,5 +19,5 @@ public partial class repuesto
 
     public virtual categorium? categoria { get; set; }
 
-    public virtual ICollection<repuesto_unidade> repuesto_unidades { get; set; } = new List<repuesto_unidade>();
+    public virtual ICollection<repuesto_unidades> repuesto_unidades { get; set; } = new List<repuesto_unidades>();
 }

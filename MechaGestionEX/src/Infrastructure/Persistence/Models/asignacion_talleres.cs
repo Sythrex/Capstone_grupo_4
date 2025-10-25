@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Infrastructure.Persistence.Models;
 
-public partial class asignacion_tallere
+public partial class asignacion_talleres
 {
     public int id { get; set; }
 

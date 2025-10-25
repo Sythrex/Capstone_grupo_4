@@ -27,6 +27,8 @@ public partial class atencion
 
     public int? cotizacion_id { get; set; }
 
+    public int? agenda_id { get; set; }
+
     public virtual funcionario administrativo { get; set; } = null!;
 
     public virtual ICollection<bitacora> bitacoras { get; set; } = new List<bitacora>();
@@ -45,5 +47,5 @@ public partial class atencion
 
     public virtual vehiculo? vehiculo { get; set; }
 
-    public int agenda_id { get; set; }
+    public virtual agenda? agenda { get; set; }
 }

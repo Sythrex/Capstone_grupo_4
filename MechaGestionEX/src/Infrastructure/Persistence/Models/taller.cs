@@ -15,11 +15,11 @@ public partial class taller
 
     public int comuna_id { get; set; }
 
-    public virtual ICollection<asignacion_tallere> asignacion_talleres { get; set; } = new List<asignacion_tallere>();
+    public virtual ICollection<asignacion_talleres> asignacion_talleres { get; set; } = new List<asignacion_talleres>();
 
     public virtual ICollection<atencion> atencions { get; set; } = new List<atencion>();
 
     public virtual comuna comuna { get; set; } = null!;
 
-    public virtual ICollection<repuesto_unidade> repuesto_unidades { get; set; } = new List<repuesto_unidade>();
+    public virtual ICollection<repuesto_unidades> repuesto_unidades { get; set; } = new List<repuesto_unidades>();
 }

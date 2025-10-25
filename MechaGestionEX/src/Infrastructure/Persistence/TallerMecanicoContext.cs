@@ -12,51 +12,53 @@ public partial class TallerMecanicoContext : DbContext
     {
     }
 
-    public virtual DbSet<asignacion_tallere> asignacion_talleres { get; set; }
+    public virtual DbSet<asignacion_talleres> asignacion_talleres { get; set; }
 
-    public virtual DbSet<atencion> atencions { get; set; }
+    public virtual DbSet<atencion> atencion { get; set; }
 
-    public virtual DbSet<bitacora> bitacoras { get; set; }
+    public virtual DbSet<bitacora> bitacora { get; set; }
+
+    public virtual DbSet<agenda> agenda { get; set; }
 
     public virtual DbSet<categorium> categoria { get; set; }
 
-    public virtual DbSet<cliente> clientes { get; set; }
+    public virtual DbSet<cliente> cliente { get; set; }
 
-    public virtual DbSet<cliente_vehiculo> cliente_vehiculos { get; set; }
+    public virtual DbSet<cliente_vehiculo> cliente_vehiculo { get; set; }
 
-    public virtual DbSet<comuna> comunas { get; set; }
+    public virtual DbSet<comuna> comuna { get; set; }
 
-    public virtual DbSet<cotizacion> cotizacions { get; set; }
+    public virtual DbSet<cotizacion> cotizacion { get; set; }
 
-    public virtual DbSet<factura> facturas { get; set; }
+    public virtual DbSet<factura> factura { get; set; }
 
-    public virtual DbSet<funcionario> funcionarios { get; set; }
+    public virtual DbSet<funcionario> funcionario { get; set; }
 
-    public virtual DbSet<log_inventario> log_inventarios { get; set; }
+    public virtual DbSet<log_inventario> log_inventario { get; set; }
 
-    public virtual DbSet<region> regions { get; set; }
+    public virtual DbSet<region> region { get; set; }
 
-    public virtual DbSet<repuesto> repuestos { get; set; }
+    public virtual DbSet<repuesto> repuesto { get; set; }
 
-    public virtual DbSet<repuesto_unidade> repuesto_unidades { get; set; }
+    public virtual DbSet<repuesto_unidades> repuesto_unidades { get; set; }
 
-    public virtual DbSet<servicio> servicios { get; set; }
+    public virtual DbSet<servicio> servicio { get; set; }
 
-    public virtual DbSet<taller> tallers { get; set; }
+    public virtual DbSet<taller> taller { get; set; }
 
-    public virtual DbSet<tipo_funcionario> tipo_funcionarios { get; set; }
+    public virtual DbSet<tipo_funcionario> tipo_funcionario { get; set; }
 
-    public virtual DbSet<tipo_servicio> tipo_servicios { get; set; }
+    public virtual DbSet<tipo_servicio> tipo_servicio { get; set; }
 
-    public virtual DbSet<tipo_vehiculo> tipo_vehiculos { get; set; }
+    public virtual DbSet<tipo_vehiculo> tipo_vehiculo { get; set; }
 
-    public virtual DbSet<usuario> usuarios { get; set; }
+    public virtual DbSet<usuario> usuario { get; set; }
 
-    public virtual DbSet<vehiculo> vehiculos { get; set; }
+    public virtual DbSet<vehiculo> vehiculo { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<asignacion_tallere>(entity =>
+        modelBuilder.Entity<asignacion_talleres>(entity =>
         {
             entity.HasKey(e => e.id).HasName("PK__asignaci__3213E83F266FB600");
 
@@ -110,9 +112,32 @@ public partial class TallerMecanicoContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_atencion_taller");
 
+            entity.HasOne(d => d.agenda)
+                .WithOne(p => p.atencion)
+                .HasForeignKey<atencion>(d => d.agenda_id)
+                .HasConstraintName("fk_atencion_agenda");
+
             entity.HasOne(d => d.vehiculo).WithMany(p => p.atencions)
                 .HasForeignKey(d => d.vehiculo_id)
                 .HasConstraintName("fk_atencion_vehiculo");
+        });
+
+        modelBuilder.Entity<agenda>(entity =>
+        {
+            entity.ToTable("agenda");
+            entity.HasKey(e => e.id);
+            entity.Property(e => e.id).UseIdentityColumn();
+
+            entity.Property(e => e.titulo)
+                  .IsRequired()
+                  .HasMaxLength(50);
+            entity.Property(e => e.fecha_creacion)
+                  .IsRequired()
+                  .HasDefaultValueSql("GETDATE()");
+            entity.Property(e => e.fecha_agenda)
+                  .IsRequired();
+            entity.Property(e => e.estado).HasMaxLength(20);
+            entity.Property(e => e.comentarios).HasMaxLength(200);
         });
 
         modelBuilder.Entity<bitacora>(entity =>
@@ -325,7 +350,7 @@ public partial class TallerMecanicoContext : DbContext
                 .HasConstraintName("fk_repuesto_categoria");
         });
 
-        modelBuilder.Entity<repuesto_unidade>(entity =>
+        modelBuilder.Entity<repuesto_unidades>(entity =>
         {
             entity.HasKey(e => e.id).HasName("PK__repuesto__3213E83F4C7A1430");
 

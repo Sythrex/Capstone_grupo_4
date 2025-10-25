@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Infrastructure.Persistence.Models;
 
-public partial class repuesto_unidade
+public partial class repuesto_unidades
 {
     public int id { get; set; }
 

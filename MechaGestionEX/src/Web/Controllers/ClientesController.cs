@@ -15,7 +15,7 @@ public class ClientesController : Controller
     [HttpGet("")]
     public async Task<IActionResult> Index()
     {
-        var data = await _db.clientes
+        var data = await _db.cliente
             .AsNoTracking()
             .OrderBy(c => c.id)
             .Take(100)
@@ -28,7 +28,7 @@ public class ClientesController : Controller
     [HttpGet("details/{id:int}")]
     public async Task<IActionResult> Details(int id)
     {
-        var entity = await _db.clientes.AsNoTracking().FirstOrDefaultAsync(x => x.id == id);
+        var entity = await _db.cliente.AsNoTracking().FirstOrDefaultAsync(x => x.id == id);
         if (entity is null) return NotFound();
         return View(entity);
     }
@@ -47,7 +47,7 @@ public class ClientesController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        _db.clientes.Add(model);
+        _db.cliente.Add(model);
         await _db.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
@@ -56,7 +56,7 @@ public class ClientesController : Controller
     [HttpGet("edit/{id:int}")]
     public async Task<IActionResult> Edit(int id)
     {
-        var entity = await _db.clientes.FindAsync(id);
+        var entity = await _db.cliente.FindAsync(id);
         if (entity is null) return NotFound();
         return View(entity);
     }
@@ -78,7 +78,7 @@ public class ClientesController : Controller
     [HttpGet("delete/{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var entity = await _db.clientes.AsNoTracking().FirstOrDefaultAsync(x => x.id == id);
+        var entity = await _db.cliente.AsNoTracking().FirstOrDefaultAsync(x => x.id == id);
         if (entity is null) return NotFound();
         return View(entity);
     }
@@ -88,10 +88,10 @@ public class ClientesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var entity = await _db.clientes.FindAsync(id);
+        var entity = await _db.cliente.FindAsync(id);
         if (entity is not null)
         {
-            _db.clientes.Remove(entity);
+            _db.cliente.Remove(entity);
             await _db.SaveChangesAsync();
         }
         return RedirectToAction(nameof(Index));

@@ -19,7 +19,7 @@ public partial class servicio
 
     public virtual atencion atencion { get; set; } = null!;
 
-    public virtual repuesto_unidade? repuesto_unidades { get; set; }
+    public virtual repuesto_unidades? repuesto_unidades { get; set; }
 
     public virtual tipo_servicio tipo_servicio { get; set; } = null!;
 }

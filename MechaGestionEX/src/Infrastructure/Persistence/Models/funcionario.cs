@@ -17,7 +17,7 @@ public partial class funcionario
 
     public int? tipo_id { get; set; }
 
-    public virtual ICollection<asignacion_tallere> asignacion_talleres { get; set; } = new List<asignacion_tallere>();
+    public virtual ICollection<asignacion_talleres> asignacion_talleres { get; set; } = new List<asignacion_talleres>();
 
     public virtual ICollection<atencion> atencionadministrativos { get; set; } = new List<atencion>();
 

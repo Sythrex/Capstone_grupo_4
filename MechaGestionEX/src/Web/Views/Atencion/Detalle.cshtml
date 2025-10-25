@@ -1,0 +1,83 @@
+﻿@model Infrastructure.Persistence.Models.atencion
+
+@{
+    ViewData["Title"] = "Detalle de la Atención";
+}
+
+<h1 class="mb-4">Detalle de la Atención</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-person-fill me-2"></i>
+                <strong>Información del Cliente y Vehículo</strong>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Cliente</dt>
+                    <dd class="col-sm-8">
+                        <a href="#">@Model.cliente?.nombre</a>
+                    </dd>
+
+                    <dt class="col-sm-4">RUT Cliente</dt>
+                    <dd class="col-sm-8">@Model.cliente?.rut</dd>
+
+                    <dt class="col-sm-4">Vehículo</dt>
+                    <dd class="col-sm-8">
+                        <a href="#">@Model.vehiculo?.patente</a>
+                    </dd>
+
+                    <dt class="col-sm-4">Tipo</dt>
+                    <dd class="col-sm-8">@Model.vehiculo?.tipo?.nombre</dd>
+
+                    <dt class="col-sm-4">Año</dt>
+                    <dd class="col-sm-8">@Model.vehiculo?.anio</dd>
+
+                    <dt class="col-sm-4">Kilometraje Ingreso</dt>
+                    @* <dd class="col-sm-8">@Model.kilometraje_ingreso?.ToString("N0") km</dd> *@
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-calendar-event-fill me-2"></i>
+                <strong>Detalles de la Cita</strong>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Fecha Agendada</dt>
+                    @* <dd class="col-sm-8">@Model.agenda?.fecha_agenda?.ToString("dddd, dd 'de' MMMM 'de' yyyy, HH:mm")</dd> *@
+
+                    <dt class="col-sm-4">Estado Actual</dt>
+                    <dd class="col-sm-8"><span class="badge bg-primary">@Model.estado</span></dd>
+
+                    <dt class="col-sm-4">Taller</dt>
+                    <dd class="col-sm-8">@Model.taller?.razon_social</dd>
+
+                    <dt class="col-sm-4">Mecánico Asignado</dt>
+                    <dd class="col-sm-8">@Model.mecanico?.nombre</dd>
+
+                    <dt class="col-sm-4">Administrativo</dt>
+                    <dd class="col-sm-8">@Model.administrativo?.nombre</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-tools me-2"></i>
+        <strong>Servicios a Prestar</strong>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Aún no se han agregado servicios a esta atención.</p>
+        <a href="#" class="btn btn-success">
+            <i class="bi bi-plus-circle me-2"></i>Agregar Servicio
+        </a>
+    </div>
+</div>
