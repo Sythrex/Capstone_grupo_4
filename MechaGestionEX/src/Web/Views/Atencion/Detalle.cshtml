@@ -4,7 +4,12 @@
     ViewData["Title"] = "Detalle de la Atención";
 }
 
-<h1 class="mb-4">Detalle de la Atención</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="javascript:history.back()" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle me-2"></i>Volver
+    </a>
+    <h3>DETALLE DE ATENCION</h3>
+</div>
 
 <div class="row">
     <div class="col-md-6">
@@ -34,8 +39,8 @@
                     <dt class="col-sm-4">Año</dt>
                     <dd class="col-sm-8">@Model.vehiculo?.anio</dd>
 
-                    <dt class="col-sm-4">Kilometraje Ingreso</dt>
-                    @* <dd class="col-sm-8">@Model.kilometraje_ingreso?.ToString("N0") km</dd> *@
+                    <dt class="col-sm-4">Kilometraje</dt>
+                    <dd class="col-sm-8">@Model.kilometraje_ingreso.ToString("N0") km</dd>
                 </dl>
             </div>
         </div>
@@ -50,7 +55,7 @@
             <div class="card-body">
                 <dl class="row">
                     <dt class="col-sm-4">Fecha Agendada</dt>
-                    @* <dd class="col-sm-8">@Model.agenda?.fecha_agenda?.ToString("dddd, dd 'de' MMMM 'de' yyyy, HH:mm")</dd> *@
+                    <dd class="col-sm-8">@Model.agenda?.fecha_agenda.ToString("dddd, dd 'de' MMMM 'de' yyyy, HH:mm")</dd>
 
                     <dt class="col-sm-4">Estado Actual</dt>
                     <dd class="col-sm-8"><span class="badge bg-primary">@Model.estado</span></dd>
@@ -79,5 +84,36 @@
         <a href="#" class="btn btn-success">
             <i class="bi bi-plus-circle me-2"></i>Agregar Servicio
         </a>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Editar_Atencion" asp-controller="Atencion" asp-route-id="@Model.id" class="btn btn-warning">
+        <i class="bi bi-pencil-square me-2"></i>Editar
+    </a>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmarEliminarModal">
+        <i class="bi bi-trash-fill me-2"></i>Eliminar
+    </button>
+</div>
+
+
+<div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar esta atención y su cita agendada? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form asp-action="Eliminar" asp-controller="Atencion" method="post">
+                    <input type="hidden" name="id" value="@Model.id" />
+                    <button type="submit" class="btn btn-danger">Sí, Eliminar</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>

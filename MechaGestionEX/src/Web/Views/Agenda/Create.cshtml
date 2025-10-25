@@ -1,0 +1,103 @@
+﻿@model Web.ViewModels.CrearAgendaViewModel
+
+@{
+    ViewData["Title"] = "Agendar Nueva Hora";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="javascript:history.back()" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle me-2"></i>Volver
+    </a>
+    <h3>AGENDAR NUEVA HORA</h3>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h4>Datos de la Cita</h4>
+            <div class="mb-3">
+                <label asp-for="Titulo" class="form-label"></label>
+                <input asp-for="Titulo" class="form-control" />
+                <span asp-validation-for="Titulo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FechaAgenda" class="form-label"></label>
+                <input asp-for="FechaAgenda" type="datetime-local" class="form-control" />
+                <span asp-validation-for="FechaAgenda" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Comentarios" class="form-label"></label>
+                <textarea asp-for="Comentarios" class="form-control" rows="3"></textarea>
+            </div>
+
+            <hr />
+
+            <h4>Datos del Cliente y Vehículo</h4>
+            <div class="mb-3">
+                <label asp-for="ClienteId" class="form-label"></label>
+                <select asp-for="ClienteId" asp-items="@Model.ClientesDisponibles" class="form-select" id="cliente-select">
+                    <option value="">-- Seleccione un Cliente --</option>
+                </select>
+                <span asp-validation-for="ClienteId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="VehiculoId" class="form-label"></label>
+                <select asp-for="VehiculoId" class="form-select" id="vehiculo-select" disabled>
+                    <option value="">-- Seleccione un cliente primero --</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Observaciones" class="form-label"></label>
+                <textarea asp-for="Observaciones" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Agendar y Crear Atención</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            $('#cliente-select').on('change', function () {
+                var clienteId = $(this).val();
+                var $vehiculoSelect = $('#vehiculo-select');
+
+                $vehiculoSelect.empty().append('<option value="">Cargando...</option>');
+
+                if (!clienteId) {
+                    $vehiculoSelect.empty().append('<option value="">-- Seleccione un cliente primero --</option>').prop('disabled', true);
+                    return;
+                }
+
+                $.getJSON('/Agenda/GetVehiculosPorCliente?clienteId=' + clienteId, function (data) {
+                    $vehiculoSelect.empty().append('<option value="">-- (Opcional) Seleccione un Vehículo --</option>');
+
+                    $.each(data, function (index, item) {
+                        $vehiculoSelect.append($('<option>', {
+                            value: item.id,
+                            text: item.texto
+                        }));
+                    });
+
+                    $vehiculoSelect.prop('disabled', false);
+                }).fail(function() {
+                    $vehiculoSelect.empty().append('<option value="">Error al cargar vehículos</option>');
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,49 @@
+﻿@model Infrastructure.Persistence.Models.atencion
+
+@{
+    ViewData["Title"] = "Editar Atención";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="javascript:history.back()" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle me-2"></i>Volver
+    </a>
+    <h3>EDITAR ATENCIÓN</h3>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Editar">
+            <input type="hidden" asp-for="id" />
+
+            <div class="mb-3">
+                <label asp-for="kilometraje_ingreso" class="form-label">Kilometraje de Ingreso</label>
+                <input asp-for="kilometraje_ingreso" class="form-control" />
+                <span asp-validation-for="kilometraje_ingreso" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="observaciones" class="form-label">Observaciones</label>
+                <textarea asp-for="observaciones" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="observaciones" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="estado" class="form-label">Estado de la Atención</label>
+                <input asp-for="estado" class="form-control" />
+                <span asp-validation-for="estado" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a asp-action="Detalle" asp-route-id="@Model.id" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

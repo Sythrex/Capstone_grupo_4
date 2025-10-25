@@ -7,9 +7,9 @@ public partial class usuario
 {
     public int id { get; set; }
 
-    public string password_hash { get; set; } = null!;
+    public string? password_hash { get; set; }
 
-    public string nombre_usuario { get; set; } = null!;
+    public string? nombre_usuario { get; set; }
 
     public int? cliente_id { get; set; }
 
@@ -19,3 +19,4 @@ public partial class usuario
 
     public virtual funcionario? funcionario { get; set; }
 }
+
