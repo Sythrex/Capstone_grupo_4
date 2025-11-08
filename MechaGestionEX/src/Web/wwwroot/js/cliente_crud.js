@@ -51,4 +51,48 @@
             }
         }, 300);
     }
+
+    let clienteId = null;
+
+    $('#checkRutBtn').click(function () {
+        const rut = $('#rutInput').val();
+        if (!rut) {
+            alert('Ingrese un RUT válido.');
+            return;
+        }
+
+        $.get('/clientes/check-rut', { rut: rut }, function (data) {
+            if (!data.exists) {
+                alert('No se encontró cliente con este RUT. Puede crear uno nuevo.');
+                return;
+            }
+
+            clienteId = data.id;
+            const details = $('#clienteDetails');
+            details.html(`
+                    <dt>Nombre</dt><dd>${data.nombre}</dd>
+                    <dt>Correo</dt><dd>${data.correo}</dd>
+                    <dt>Teléfono</dt><dd>${data.telefono}</dd>
+                    <dt>Dirección</dt><dd>${data.direccion}</dd>
+                    <dt>Comuna</dt><dd>${data.comuna}</dd>
+                    <dt>Región</dt><dd>${data.region}</dd>
+                `);
+            $('#clienteExistenteModal').modal('show');
+        });
+    });
+
+    $('#addToTallerBtn').click(function () {
+        if (!clienteId) return;
+
+        $.post('/clientes/add-to-taller', { clienteId: clienteId }, function (response) {
+            if (response.success) {
+                alert('Cliente agregado al taller exitosamente.');
+                // Opcional: Redirige o actualiza form con datos del cliente
+                window.location.href = '/clientes'; // Ej: redirige a index
+            } else {
+                alert(response.message || 'Error al agregar.');
+            }
+            $('#clienteExistenteModal').modal('hide');
+        });
+    });
 });

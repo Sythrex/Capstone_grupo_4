@@ -14,6 +14,8 @@ public partial class TallerMecanicoContext : DbContext
 
     public virtual DbSet<asignacion_talleres> asignacion_talleres { get; set; }
 
+    public virtual DbSet<taller_cliente> taller_cliente { get; set; }
+
     public virtual DbSet<atencion> atencion { get; set; }
 
     public virtual DbSet<bitacora> bitacora { get; set; }
@@ -71,6 +73,19 @@ public partial class TallerMecanicoContext : DbContext
                 .HasForeignKey(d => d.taller_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_asignacion_taller");
+        });
+
+        modelBuilder.Entity<taller_cliente>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("PK__taller_c__3213E83F40DC9C2B");
+            entity.HasOne(d => d.taller).WithMany(p => p.taller_clientes)
+                .HasForeignKey(d => d.taller_id)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_taller_cliente_taller");
+            entity.HasOne(d => d.cliente).WithMany(p => p.taller_clientes)
+                .HasForeignKey(d => d.cliente_id)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_taller_cliente_cliente");
         });
 
         modelBuilder.Entity<atencion>(entity =>
