@@ -2,9 +2,10 @@ using Infrastructure.Persistence;
 using Infrastructure.Persistence.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Controllers;
-
+[Authorize(Roles = "Admin,Funcionario")]
 [Route("clientes")]
 public class ClientesController : Controller
 {
