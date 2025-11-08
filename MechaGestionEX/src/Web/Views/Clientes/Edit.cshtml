@@ -3,6 +3,10 @@
     ViewData["Title"] = "Editar Cliente";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/select2.css" />
+}
+
 <h1 class="mb-4">Editar Cliente</h1>
 
 <form asp-action="Edit" method="post" class="row g-3">
@@ -34,8 +38,20 @@
         <span asp-validation-for="direccion" class="text-danger"></span>
     </div>
     <div class="col-md-3">
-        <label asp-for="comuna_id" class="form-label"></label>
-        <input asp-for="comuna_id" class="form-control" />
+        <label for="regionSelect" class="form-label">Región</label>
+        <select id="regionSelect" class="form-select select2" name="region_temp" data-placeholder="Seleccione una región">
+            <option value="">Seleccione una región</option>
+            @foreach (var r in ViewBag.Regions)
+            {
+                <option value="@r.id">@r.nombre</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="comuna_id" class="form-label">Comuna</label>
+        <select asp-for="comuna_id" id="comunaSelect" class="form-select select2" disabled data-placeholder="Seleccione una comuna">
+            <option value="">Seleccione una comuna</option>
+        </select>
         <span asp-validation-for="comuna_id" class="text-danger"></span>
     </div>
 
@@ -46,5 +62,11 @@
 </form>
 
 @section Scripts {
+    <script>
+        window.comunasByRegion = @Html.Raw(Json.Serialize(ViewBag.ComunasByRegion ?? new Dictionary<int, List<dynamic>>()));
+        window.currentRegionId = @((Model.comuna?.region?.id ?? 0));
+        window.currentComunaId = @(Model.comuna_id ?? 0);
+    </script>
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/cliente_crud.js"></script>
 }

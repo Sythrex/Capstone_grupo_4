@@ -25,7 +25,8 @@ else
                     <th>correo</th>
                     <th>telefono</th>
                     <th>direccion</th>
-                    <th>comuna_id</th>
+                    <th>comuna</th>
+                    <th>region</th>
                     <th class="text-end">Acciones</th>
                 </tr>
             </thead>
@@ -39,7 +40,8 @@ else
                         <td>@c.correo</td>
                         <td>@c.telefono</td>
                         <td>@c.direccion</td>
-                        <td>@c.comuna_id</td>
+                        <td>@(c.comuna?.nombre ?? "Sin Comuna")</td>
+                        <td>@(c.comuna?.region?.nombre ?? "Sin Region")</td>
                         <td class="text-end">
                             <a class="btn btn-sm btn-outline-secondary me-1" asp-action="Details" asp-route-id="@c.id">Detalles</a>
                             <a class="btn btn-sm btn-outline-warning me-1" asp-action="Edit" asp-route-id="@c.id">Editar</a>

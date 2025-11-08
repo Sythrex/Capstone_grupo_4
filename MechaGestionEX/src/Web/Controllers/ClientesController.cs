@@ -16,6 +16,8 @@ public class ClientesController : Controller
     public async Task<IActionResult> Index()
     {
         var data = await _db.cliente
+            .Include(c => c.comuna)
+                .ThenInclude(co => co.region)
             .AsNoTracking()
             .OrderBy(c => c.id)
             .Take(100)
@@ -35,8 +37,14 @@ public class ClientesController : Controller
 
     // GET: /clientes/create
     [HttpGet("create")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
+        ViewBag.Regions = await _db.region.AsNoTracking().ToListAsync();
+        var comunasByRegion = await _db.comuna
+            .AsNoTracking()
+            .GroupBy(c => c.region_id)
+            .ToDictionaryAsync(g => g.Key, g => g.ToList());
+        ViewBag.ComunasByRegion = comunasByRegion;
         return View(new cliente());
     }
 
@@ -56,8 +64,19 @@ public class ClientesController : Controller
     [HttpGet("edit/{id:int}")]
     public async Task<IActionResult> Edit(int id)
     {
-        var entity = await _db.cliente.FindAsync(id);
+        var entity = await _db.cliente
+            .Include(c => c.comuna)
+                .ThenInclude(co => co.region)
+            .FirstOrDefaultAsync(x => x.id == id);
         if (entity is null) return NotFound();
+
+        ViewBag.Regions = await _db.region.AsNoTracking().ToListAsync();
+        var comunasByRegion = await _db.comuna
+            .AsNoTracking()
+            .GroupBy(c => c.region_id)
+            .ToDictionaryAsync(g => g.Key, g => g.ToList());
+        ViewBag.ComunasByRegion = comunasByRegion;
+
         return View(entity);
     }
 

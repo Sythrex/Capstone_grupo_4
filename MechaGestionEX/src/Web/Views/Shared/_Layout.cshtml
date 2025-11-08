@@ -6,9 +6,11 @@
     <title>@ViewData["Title"] - MechagestionEX - Panel de Control</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <link rel="stylesheet" href="~/css/site.css" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -31,12 +33,12 @@
                     <h5>Menú Principal</h5>
                 </div>
                 <div class="list-group list-group-flush">
-                    <a href="https://localhost:7141/agenda" class="list-group-item list-group-item-action"><i class="bi bi-calendar-plus me-2"></i> Agenda</a>
+                    <a href=@Url.Action("index","agenda") class="list-group-item list-group-item-action"><i class="bi bi-calendar-plus me-2"></i> Agenda</a>
                     <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-card-list me-2"></i> Ver Historial</a>
                     <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-car-front me-2"></i> Mis Vehículos</a>
                     <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-tools me-2"></i> Control de Stock</a>
                     <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reportes</a>
-                    <a href="https://localhost:7141/clientes" class="list-group-item list-group-item-action"><i class="bi bi-file-earmark-bar-graph me-2"></i> Clientes</a>
+                    <a href=@Url.Action("index", "clientes") class="list-group-item list-group-item-action"><i class="bi bi-file-earmark-bar-graph me-2"></i> Clientes</a>
                 </div>
             </div>
 
@@ -82,7 +84,7 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
