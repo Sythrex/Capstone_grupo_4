@@ -73,6 +73,9 @@ public partial class TallerMecanicoContext : DbContext
                 .HasForeignKey(d => d.taller_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_asignacion_taller");
+
+            entity.Property(e => e.ultimo_activo)
+                .HasDefaultValue(false);
         });
 
         modelBuilder.Entity<taller_cliente>(entity =>

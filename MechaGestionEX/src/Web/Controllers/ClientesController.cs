@@ -19,7 +19,8 @@ namespace Web.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var tallerId = int.Parse(User.FindFirstValue("TallerId") ?? "0");
+            var tallerId = HttpContext.Session.GetInt32("TallerId") ?? 
+                int.Parse(User.FindFirstValue("TallerId") ?? "0");
             if (tallerId == 0) return BadRequest("No tienes taller asignado.");
 
             var data = await _db.cliente
@@ -38,7 +39,8 @@ namespace Web.Controllers
         [HttpGet("details/{id:int}")]
         public async Task<IActionResult> Details(int id)
         {
-            var tallerId = int.Parse(User.FindFirstValue("TallerId") ?? "0");
+            var tallerId = HttpContext.Session.GetInt32("TallerId") ?? 
+                int.Parse(User.FindFirstValue("TallerId") ?? "0");
             var asociado = await _db.taller_cliente.AnyAsync(tc => tc.taller_id == tallerId && tc.cliente_id == id);
             if (!asociado) return Forbid();
 
@@ -77,7 +79,8 @@ namespace Web.Controllers
                 return View(model);
             }
 
-            var tallerId = int.Parse(User.FindFirstValue("TallerId") ?? "0");
+            var tallerId = HttpContext.Session.GetInt32("TallerId") ?? 
+                int.Parse(User.FindFirstValue("TallerId") ?? "0");
             if (tallerId == 0) return BadRequest("No tienes taller asignado.");
 
             // Chequeo duplicado por RUT
@@ -101,7 +104,8 @@ namespace Web.Controllers
         [HttpGet("edit/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var tallerId = int.Parse(User.FindFirstValue("TallerId") ?? "0");
+            var tallerId = HttpContext.Session.GetInt32("TallerId") ?? 
+                int.Parse(User.FindFirstValue("TallerId") ?? "0");
             var asociado = await _db.taller_cliente.AnyAsync(tc => tc.taller_id == tallerId && tc.cliente_id == id);
             if (!asociado) return Forbid();
 
@@ -138,7 +142,8 @@ namespace Web.Controllers
         [HttpGet("delete/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var tallerId = int.Parse(User.FindFirstValue("TallerId") ?? "0");
+            var tallerId = HttpContext.Session.GetInt32("TallerId") ?? 
+                int.Parse(User.FindFirstValue("TallerId") ?? "0");
             var asociado = await _db.taller_cliente.AnyAsync(tc => tc.taller_id == tallerId && tc.cliente_id == id);
             if (!asociado) return Forbid();
 
@@ -189,7 +194,8 @@ namespace Web.Controllers
         [HttpPost("add-to-taller")]
         public async Task<IActionResult> AddToTaller(int clienteId)
         {
-            var tallerId = int.Parse(User.FindFirstValue("TallerId") ?? "0");
+            var tallerId = HttpContext.Session.GetInt32("TallerId") ?? 
+                int.Parse(User.FindFirstValue("TallerId") ?? "0");
             if (tallerId == 0) return BadRequest("No tienes taller asignado.");
 
             var existeAsociacion = await _db.taller_cliente.AnyAsync(tc => tc.taller_id == tallerId && tc.cliente_id == clienteId);

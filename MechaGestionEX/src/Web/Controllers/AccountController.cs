@@ -2,18 +2,19 @@
 using Infrastructure.Persistence.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Web.Models;
-using System.Linq;
-using System;
 
-namespace web.Controllers  // Ajusta el namespace si es diferente
+namespace web.Controllers
 {
     public class AccountController : Controller
     {
@@ -71,18 +72,21 @@ namespace web.Controllers  // Ajusta el namespace si es diferente
             else if (user.funcionario_id.HasValue)
             {
                 claims.Add(new Claim(ClaimTypes.Role, "Funcionario"));
+                claims.Add(new Claim("FuncionarioId", user.funcionario_id.Value.ToString()));
 
                 var hoy = DateOnly.FromDateTime(DateTime.Now);
                 var asignacionActual = await _context.asignacion_talleres
                     .Where(a => a.funcionario_id == user.funcionario_id.Value &&
                                 a.fecha_inicio <= hoy &&
-                                (a.fecha_termino >= hoy))
-                    .OrderByDescending(a => a.fecha_inicio)
+                                (a.fecha_termino >= hoy || a.fecha_termino == null))
+                    .OrderByDescending(a => a.ultimo_activo)
+                    .ThenByDescending(a => a.fecha_inicio)
                     .FirstOrDefaultAsync();
 
                 if (asignacionActual != null)
                 {
                     claims.Add(new Claim("TallerId", asignacionActual.taller_id.ToString()));
+                    HttpContext.Session.SetInt32("TallerId", asignacionActual.taller_id);
                 }
                 else
                 {
@@ -103,9 +107,9 @@ namespace web.Controllers  // Ajusta el namespace si es diferente
                 return Redirect(returnUrl);
 
             if (user.cliente_id.HasValue)
-                return RedirectToAction("Panel", "Cliente");  // Asumiendo que existe
+                return RedirectToAction("Panel", "Cliente");
 
-            return RedirectToAction("Index", "Home");  // Panel de control para funcionarios
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
@@ -116,7 +120,37 @@ namespace web.Controllers  // Ajusta el namespace si es diferente
             return RedirectToAction("Login", "Account");
         }
 
-        // Nuevo: Registro para Funcionarios (similar a RegisterClient)
+        [HttpPost]
+        [Authorize(Roles = "Funcionario")]
+        public async Task<IActionResult> ChangeTaller(int tallerId)
+        {
+            var funcionarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+
+            var asignacion = await _context.asignacion_talleres
+                .FirstOrDefaultAsync(a => a.funcionario_id == funcionarioId && a.taller_id == tallerId);
+
+            if (asignacion == null)
+            {
+                return Json(new { success = false, message = "Taller no asignado." });
+            }
+
+            var asignacionesFuncionario = await _context.asignacion_talleres
+                .Where(a => a.funcionario_id == funcionarioId)
+                .ToListAsync();
+
+            foreach (var a in asignacionesFuncionario)
+            {
+                a.ultimo_activo = (a.taller_id == tallerId);
+            }
+
+            await _context.SaveChangesAsync();
+
+            HttpContext.Session.SetInt32("TallerId", tallerId);
+
+            return Json(new { success = true });
+        }
+
+
         [HttpGet("Account/RegisterFuncionario")]
         public async Task<IActionResult> RegisterFuncionario()
         {
@@ -146,7 +180,6 @@ namespace web.Controllers  // Ajusta el namespace si es diferente
                 return View(vm);
             }
 
-            // Crear funcionario
             var nuevoFuncionario = new funcionario
             {
                 rut = vm.Rut,
@@ -158,7 +191,6 @@ namespace web.Controllers  // Ajusta el namespace si es diferente
             _context.funcionario.Add(nuevoFuncionario);
             await _context.SaveChangesAsync();
 
-            // Crear asignación al taller (activa por default)
             var nuevaAsignacion = new asignacion_talleres
             {
                 funcionario_id = nuevoFuncionario.id,
@@ -169,7 +201,6 @@ namespace web.Controllers  // Ajusta el namespace si es diferente
             _context.asignacion_talleres.Add(nuevaAsignacion);
             await _context.SaveChangesAsync();
 
-            // Crear usuario
             var nuevoUsuario = new usuario
             {
                 nombre_usuario = vm.NombreUsuario,
@@ -179,7 +210,6 @@ namespace web.Controllers  // Ajusta el namespace si es diferente
             _context.usuario.Add(nuevoUsuario);
             await _context.SaveChangesAsync();
 
-            // Login automático
             await SignInComoFuncionario(nuevoUsuario, vm.TallerId);
 
             return RedirectToAction("Index", "Home");
@@ -192,7 +222,8 @@ namespace web.Controllers  // Ajusta el namespace si es diferente
                 new Claim(ClaimTypes.Name, u.nombre_usuario ?? ""),
                 new Claim(ClaimTypes.NameIdentifier, u.id.ToString()),
                 new Claim(ClaimTypes.Role, "Funcionario"),
-                new Claim("TallerId", tallerId.ToString())
+                new Claim("TallerId", tallerId.ToString()),
+                new Claim("FuncionarioId", u.funcionario_id.Value.ToString())
             };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -203,7 +234,7 @@ namespace web.Controllers  // Ajusta el namespace si es diferente
             );
         }
 
-        // Helper SHA-256 (mantén como está)
+        // Helper SHA-256 
         private static string ComputeSha256(string input)
         {
             using var sha = SHA256.Create();
@@ -211,6 +242,39 @@ namespace web.Controllers  // Ajusta el namespace si es diferente
             return BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
         }
 
-        // ... (Mantén ComunasPorRegion si lo usas)
+        [HttpGet]
+        [Authorize(Roles = "Funcionario")]
+        public async Task<IActionResult> GetTalleresAsignados(string search = null)
+        {
+            var funcionarioId = int.Parse(User.FindFirstValue("FuncionarioId") ?? "0");
+
+            var talleres = await _context.asignacion_talleres
+                .Where(a => a.funcionario_id == funcionarioId)
+                .Select(a => new { id = a.taller_id, text = a.taller.razon_social })
+                .Where(t => string.IsNullOrEmpty(search) || t.text.Contains(search))
+                .ToListAsync();
+
+            return Json(talleres);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Funcionario")]
+        public async Task<IActionResult> GetTallerActivo()
+        {
+            var funcionarioId = int.Parse(User.FindFirstValue("FuncionarioId") ?? "0");
+            var tallerId = HttpContext.Session.GetInt32("TallerId") ?? int.Parse(User.FindFirstValue("TallerId") ?? "0");
+
+            var isAssigned = await _context.asignacion_talleres
+                .AnyAsync(a => a.funcionario_id == funcionarioId && a.taller_id == tallerId);
+
+            if (!isAssigned)
+            {
+                return Json(new { id = 0, text = "Ninguno" });
+            }
+
+            var taller = await _context.taller.FirstOrDefaultAsync(t => t.id == tallerId);
+            return Json(new { id = taller?.id ?? 0, text = taller?.razon_social ?? "Ninguno" });
+        }
+
     }
 }
