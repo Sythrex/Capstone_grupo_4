@@ -1,19 +1,45 @@
 ﻿@{
-    ViewData["Title"] = "Panel de Cliente";
-    Layout = null;  // usa tu _Layout si ya lo tienes
+    ViewData["Title"] = "Historial de atenciones";
+    Layout = "_Layout_Cliente";    // o Layout = null;
 }
 
-<div class="container py-4">
-    <h1 class="mb-2">Hola, @User.Identity?.Name 👋</h1>
-    <p class="text-body-secondary">Bienvenido al panel de cliente.</p>
 
-    <div class="card rounded-4 shadow-sm mt-3">
-        <div class="card-body">
-            <h5 class="card-title mb-3">Acciones rápidas</h5>
-            <ul class="mb-0">
-                <li>Ver mis órdenes (próximo)</li>
-                <li>Actualizar mis datos (próximo)</li>
-            </ul>
+<div class="container-fluid">
+    <h2 class="mb-3">Bienvenido, @User.Identity?.Name</h2>
+
+    <div class="row g-3">
+        <div class="col-12 col-md-6">
+            <div class="card rounded-4 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Resumen</h5>
+                    <p class="text-body-secondary">Aquí puedes ver el estado general de tus citas y atenciones.</p>
+                    <a class="btn btn-primary" asp-controller="Agenda" asp-action="Index">
+                        Ver mis citas
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="card rounded-4 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Resumen</h5>
+                    <p class="text-body-secondary">Aquí puedes ver el estado general de tus citas y atenciones.</p>
+                    <a class="btn btn-primary mt-3" asp-controller="Cliente" asp-action="Historial">
+                        Ver historial de atenciones
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="card rounded-4 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Acción rápida</h5>
+                    <p class="text-body-secondary">Agenda una nueva visita al taller en minutos.</p>
+                    <a class="btn btn-outline-primary" asp-controller="Agenda" asp-action="Create">
+                        Agendar nueva
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

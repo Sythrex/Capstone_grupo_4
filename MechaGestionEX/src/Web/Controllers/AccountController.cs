@@ -72,6 +72,19 @@ namespace web.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.id.ToString())
             };
 
+            if (user.cliente_id.HasValue)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Cliente"));
+                claims.Add(new Claim("ClienteId", user.cliente_id.Value.ToString()));   // <-- clave
+            }
+
+            if (user.funcionario_id.HasValue)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Funcionario"));
+                claims.Add(new Claim("FuncionarioId", user.funcionario_id.Value.ToString()));
+            }
+
+
             if (user.cliente_id.HasValue) claims.Add(new Claim(ClaimTypes.Role, "Cliente"));
             if (user.funcionario_id.HasValue) claims.Add(new Claim(ClaimTypes.Role, "Funcionario"));
 

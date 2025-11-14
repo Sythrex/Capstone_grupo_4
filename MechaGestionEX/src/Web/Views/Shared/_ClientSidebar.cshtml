@@ -1,0 +1,44 @@
+﻿@{
+    string C(string c) => string.Equals(Convert.ToString(ViewContext.RouteData.Values["controller"]), c, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    string CA(string c, string a) =>
+        string.Equals(Convert.ToString(ViewContext.RouteData.Values["controller"]), c, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(Convert.ToString(ViewContext.RouteData.Values["action"]), a, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+<div class="d-flex flex-column gap-1 p-3">
+    <h6 class="text-uppercase text-secondary px-2 mt-2 mb-2">Cliente</h6>
+
+    <a class="nav-link px-3 py-2 rounded @CA("Cliente", "Historial")"
+       asp-controller="Cliente" asp-action="Historial">
+        <i class="bi bi-clock-history me-2"></i> Ver historial
+    </a>
+
+
+@*     <a class="nav-link px-3 py-2 rounded @CA("Cliente", "Panel")"
+       asp-controller="Cliente" asp-action="Panel">
+        <i class="bi bi-speedometer2 me-2"></i> Panel
+    </a>
+
+    <h6 class="text-uppercase text-secondary px-2 mt-3 mb-2">Servicios</h6>
+
+    <a class="nav-link px-3 py-2 rounded @C("Agenda")"
+       asp-controller="Agenda" asp-action="Index">
+        <i class="bi bi-calendar-week me-2"></i> Mis citas
+    </a>
+
+    <a class="nav-link px-3 py-2 rounded @CA("Agenda", "Create")"
+       asp-controller="Agenda" asp-action="Create">
+        <i class="bi bi-plus-circle me-2"></i> Agendar nueva
+    </a>
+
+    <a class="nav-link px-3 py-2 rounded @C("Atencion")"
+       asp-controller="Atencion" asp-action="Index">
+        <i class="bi bi-tools me-2"></i> Mis atenciones
+    </a>
+ *@
+    <h6 class="text-uppercase text-secondary px-2 mt-3 mb-2">Cuenta</h6>
+
+    <!-- Cuando tengas una pantalla para que el cliente edite sus datos, apunta allí -->
+    <a class="nav-link px-3 py-2 rounded disabled">
+        <i class="bi bi-person-gear me-2"></i> Mis datos (próximo)
+    </a>
+</div>
