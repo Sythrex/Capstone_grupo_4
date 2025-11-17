@@ -24,4 +24,6 @@ public partial class taller
     public virtual comuna comuna { get; set; } = null!;
 
     public virtual ICollection<repuesto_unidades> repuesto_unidades { get; set; } = new List<repuesto_unidades>();
+
+    public virtual ICollection<taller_repuesto> taller_repuestos { get; set; } = new List<taller_repuesto>();
 }
