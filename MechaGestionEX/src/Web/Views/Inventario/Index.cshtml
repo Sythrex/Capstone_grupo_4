@@ -56,7 +56,7 @@
 
 <!-- Modal Agregar Repuesto -->
 <div class="modal fade" id="agregarRepuestoModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Agregar Repuesto</h5>
@@ -68,7 +68,18 @@
                     <input type="radio" name="tipoAgregar" value="nuevo"> Crear Nuevo
                 </div>
                 <div id="existenteForm">
-                    <select id="repuestoSelect" class="form-select select2" data-placeholder="Buscar repuesto..."></select>
+                    <table id="repuestosTable" class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Nombre</th>
+                                <th>Marca</th>
+                                <th>Categoría</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
                 <div id="nuevoForm" style="display:none;">
                     <input type="text" id="nuevoSku" class="form-control" placeholder="SKU">
@@ -112,18 +123,7 @@
     </div>
 </div>
 
-<!-- Partial para Logs (crea Views/Inventario/_LogsPartial.cshtml) -->
-@* Contenido: Tabla simple con logs *@
-@* @model List<log_inventario>
-<table class="table">
-    <tr><th>Fecha</th><th>Usuario</th><th>Variación</th><th>Nota</th></tr>
-    @foreach (var log in Model)
-    {
-        <tr>
-            <td>@log.fecha_log</td>
-            <td>@log.usuario.nombre_usuario</td>
-            <td>@log.variacion_stock</td>
-            <td>@log.nota</td>
-        </tr>
-    }
-</table> *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/inventario.js"></script>
+}

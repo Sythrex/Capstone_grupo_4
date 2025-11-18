@@ -14,7 +14,7 @@ public partial class taller_repuesto
 
     public int repuesto_id { get; set; }
 
-    public bool activo { get; set; } = false;
+    public bool activo { get; set; } = true;
 
     public DateOnly? fecha_asignacion { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 

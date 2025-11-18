@@ -49,11 +49,11 @@ namespace Web.Controllers
 
             if (categoriaId.HasValue)
             {
-                query = query.Where(i => i.CategoriaId == categoriaId); // Asume que agregas CategoriaId a ViewModel
+                query = query.Where(i => i.CategoriaId == categoriaId);
             }
 
             var inventario = await query.ToListAsync();
-            ViewBag.Categorias = await _context.categoria.ToListAsync(); // Para dropdown
+            ViewBag.Categorias = await _context.categoria.ToListAsync();
 
             return View(inventario);
         }
@@ -120,7 +120,7 @@ namespace Web.Controllers
 
             await _context.SaveChangesAsync();
 
-            // Log inicial (opcional)
+            // Log inicial
             var log = new log_inventario
             {
                 repuesto_unidades_id = nuevasUnidades.id,
@@ -169,12 +169,95 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRepuestosGlobales(string search)
         {
+            var tallerId = HttpContext.Session.GetInt32("TallerId").Value;
+
             var repuestos = await _context.repuesto
                 .Where(r => string.IsNullOrEmpty(search) || r.nombre.Contains(search) || r.sku.Contains(search))
-                .Select(r => new { id = r.id, text = r.nombre + " (" + r.sku + ")" })
+                .Select(r => new
+                {
+                    id = r.id,
+                    sku = r.sku,
+                    nombre = r.nombre,
+                    marca = r.marca,
+                    categoriaNombre = r.categoria != null ? r.categoria.nombre : "Sin Categoría",
+                    asignado = _context.taller_repuesto.Any(tr => tr.taller_id == tallerId && tr.repuesto_id == r.id)
+                })
                 .ToListAsync();
 
             return Json(repuestos);
+        }
+
+        // En InventarioController.cs, agrega nuevo método para batch
+
+        [HttpPost]
+        public async Task<IActionResult> AgregarRepuestosBatch(List<int> repuestosIds)
+        {
+            var tallerId = HttpContext.Session.GetInt32("TallerId").Value;
+            var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+            var messages = new List<string>();
+            bool allSuccess = true;
+
+            foreach (var repuestoId in repuestosIds)
+            {
+                var repuesto = await _context.repuesto.FindAsync(repuestoId);
+                if (repuesto == null)
+                {
+                    messages.Add($"Repuesto ID {repuestoId} no encontrado.");
+                    allSuccess = false;
+                    continue;
+                }
+
+                var asignacion = await _context.taller_repuesto
+                    .FirstOrDefaultAsync(tr => tr.taller_id == tallerId && tr.repuesto_id == repuesto.id);
+
+                if (asignacion != null)
+                {
+                    messages.Add($"Repuesto ID {repuestoId} ya asignado.");
+                    allSuccess = false;
+                    continue;
+                }
+
+                var nuevaAsignacion = new taller_repuesto
+                {
+                    taller_id = tallerId,
+                    repuesto_id = repuesto.id,
+                    activo = true,
+                    fecha_asignacion = DateOnly.FromDateTime(DateTime.Now)
+                };
+                _context.taller_repuesto.Add(nuevaAsignacion);
+
+                var nuevasUnidades = new repuesto_unidades
+                {
+                    repuesto_id = repuesto.id,
+                    taller_id = tallerId,
+                    stock_disponible = 0,
+                    stock_reservado = 0,
+                    precio_unitario = 0
+                };
+                _context.repuesto_unidades.Add(nuevasUnidades);
+
+                await _context.SaveChangesAsync();
+
+                var log = new log_inventario
+                {
+                    repuesto_unidades_id = nuevasUnidades.id,
+                    usuario_id = usuarioId,
+                    variacion_stock = 0,
+                    nota = "Asignación inicial de repuesto",
+                    fecha_log = DateTime.Now
+                };
+                _context.log_inventario.Add(log);
+                await _context.SaveChangesAsync();
+            }
+
+            if (allSuccess)
+            {
+                return Json(new { success = true });
+            }
+            else
+            {
+                return Json(new { success = false, message = string.Join("\n", messages) });
+            }
         }
 
         // Acción para ver logs
@@ -186,7 +269,7 @@ namespace Web.Controllers
                 .OrderByDescending(l => l.fecha_log)
                 .ToListAsync();
 
-            return PartialView("_LogsPartial", logs); // Crea esta partial view
+            return PartialView("_LogsPartial", logs);
         }
     }
 }
