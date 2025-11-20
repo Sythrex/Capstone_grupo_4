@@ -59,14 +59,15 @@ namespace web.Controllers
             }
 
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.nombre_usuario ?? ""),
-                new Claim(ClaimTypes.NameIdentifier, user.id.ToString())
-            };
+{
+    new Claim(ClaimTypes.Name, user.nombre_usuario ?? ""),
+    new Claim(ClaimTypes.NameIdentifier, user.id.ToString())
+};
 
             if (user.cliente_id.HasValue)
             {
                 claims.Add(new Claim(ClaimTypes.Role, "Cliente"));
+                claims.Add(new Claim("ClienteId", user.cliente_id.Value.ToString()));
             }
             else if (user.funcionario_id.HasValue)
             {
@@ -92,6 +93,11 @@ namespace web.Controllers
                     ModelState.AddModelError(string.Empty, "No tienes un taller asignado activo.");
                     return View(model);
                 }
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Usuario no autorizado.");
+                return View(model);
             }
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
