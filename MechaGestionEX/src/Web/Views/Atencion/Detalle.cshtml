@@ -80,10 +80,39 @@
         <strong>Servicios a Prestar</strong>
     </div>
     <div class="card-body">
-        <p class="text-muted">Aún no se han agregado servicios a esta atención.</p>
-        <a href="#" class="btn btn-success">
+        @if (Model.servicios.Any())
+        {
+            <ul class="list-group">
+                @foreach (var servicio in Model.servicios)
+                {
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>@servicio.tipo_servicio.nombre</strong>
+                            <span>Subtotal: $@servicio.sub_total?.ToString("N0")</span>
+                        </div>
+                        <p class="text-muted">@servicio.descripcion</p>
+                        @if (servicio.servicio_repuestos.Any())
+                        {
+                            <ul class="list-group list-group-flush mt-2">
+                                @foreach (var repuesto in servicio.servicio_repuestos)
+                                {
+                                    <li class="list-group-item small">
+                                        @repuesto.repuesto_unidades.repuesto.sku - @repuesto.repuesto_unidades.repuesto.nombre (Cantidad: @repuesto.cantidad, Stock Disponible: @(repuesto.repuesto_unidades.stock_disponible - (repuesto.repuesto_unidades.stock_reservado ?? 0)))
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted">Aún no se han agregado servicios a esta atención.</p>
+        }
+        <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#agregarServicioModal">
             <i class="bi bi-plus-circle me-2"></i>Agregar Servicio
-        </a>
+        </button>
     </div>
 </div>
 
@@ -96,6 +125,56 @@
     </button>
 </div>
 
+<div class="modal fade" id="agregarServicioModal" tabindex="-1" aria-labelledby="agregarServicioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="agregarServicioLabel">Agregar Nuevo Servicio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="agregarServicioForm">
+                    <input type="hidden" name="atencion_id" value="@Model.id" />
+                    <div class="mb-3">
+                        <label for="tipo_servicio_id" class="form-label">Tipo de Servicio</label>
+                        <select id="tipo_servicio_id" name="tipo_servicio_id" class="form-select select2" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Repuestos</label>
+                        <div id="repuestos-container">
+                        </div>
+                        <button type="button" id="agregarRepuestoBtn" class="btn btn-outline-primary btn-sm mt-2">
+                            <i class="bi bi-plus-circle me-1"></i>Agregar Otro Repuesto
+                        </button>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción / Notas</label>
+                        <textarea id="descripcion" name="descripcion" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="precio_mano_obra" class="form-label">Precio Mano de Obra</label>
+                            <input type="number" id="precio_mano_obra" name="precio_mano_obra" class="form-control" min="0" value="0" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Total Repuestos</label>
+                            <div class="form-control" id="total_repuestos_display">0</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subtotal Total</label>
+                        <div class="form-control" id="sub_total_display">0</div>
+                        <input type="hidden" id="sub_total" name="sub_total" value="0" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="guardarServicioBtn" class="btn btn-primary">Guardar Servicio</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -117,3 +196,12 @@
         </div>
     </div>
 </div>
+
+@section Styles {
+    <style src="~/css/select2.css"></style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/atencion-servicio.js"></script>
+}

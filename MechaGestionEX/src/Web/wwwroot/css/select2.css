@@ -7,3 +7,7 @@
 .select2-container--bootstrap-5 .select2-selection__rendered {
     color: var(--bs-body-color) !important;
 }
+
+.select2-container--open {
+    z-index: 9999;
+}

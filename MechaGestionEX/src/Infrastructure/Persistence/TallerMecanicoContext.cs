@@ -174,9 +174,6 @@ public partial class TallerMecanicoContext : DbContext
             entity.Property(e => e.descripcion)
                 .HasMaxLength(1000)
                 .IsUnicode(false);
-            entity.Property(e => e.estado)
-                .HasMaxLength(20)
-                .IsUnicode(false);
             entity.Property(e => e.tipo)
                 .HasMaxLength(20)
                 .IsUnicode(false);
