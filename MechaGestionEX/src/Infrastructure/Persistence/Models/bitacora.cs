@@ -13,8 +13,6 @@ public partial class bitacora
 
     public int atencion_id { get; set; }
 
-    public string? estado { get; set; }
-
     public string? tipo { get; set; }
 
     public virtual atencion atencion { get; set; } = null!;

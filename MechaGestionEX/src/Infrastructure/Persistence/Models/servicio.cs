@@ -11,15 +11,15 @@ public partial class servicio
 
     public int tipo_servicio_id { get; set; }
 
-    public int? repuesto_unidades_id { get; set; }
-
     public int? sub_total { get; set; }
 
     public string? descripcion { get; set; }
+    
+    public string? estado { get; set; }
 
     public virtual atencion atencion { get; set; } = null!;
 
-    public virtual repuesto_unidades? repuesto_unidades { get; set; }
-
     public virtual tipo_servicio tipo_servicio { get; set; } = null!;
+
+    public virtual ICollection<servicio_repuesto> servicio_repuestos { get; set; } = new List<servicio_repuesto>();
 }

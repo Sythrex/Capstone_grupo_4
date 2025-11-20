@@ -23,6 +23,8 @@ public partial class cliente
 
     public virtual ICollection<cliente_vehiculo> cliente_vehiculos { get; set; } = new List<cliente_vehiculo>();
 
+    public virtual ICollection<taller_cliente> taller_clientes { get; set; } = new List<taller_cliente>();
+
     public virtual comuna? comuna { get; set; }
 
     public virtual ICollection<cotizacion> cotizacions { get; set; } = new List<cotizacion>();

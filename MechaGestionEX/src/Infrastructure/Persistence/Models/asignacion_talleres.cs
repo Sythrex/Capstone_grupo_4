@@ -17,6 +17,8 @@ public partial class asignacion_talleres
 
     public DateOnly? created_at { get; set; }
 
+    public bool ultimo_activo { get; set; } = false;
+
     public virtual funcionario funcionario { get; set; } = null!;
 
     public virtual taller taller { get; set; } = null!;

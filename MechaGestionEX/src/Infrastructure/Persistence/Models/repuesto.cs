@@ -11,8 +11,6 @@ public partial class repuesto
 
     public string nombre { get; set; } = null!;
 
-    public bool usado { get; set; }
-
     public string? marca { get; set; }
 
     public int? categoria_id { get; set; }
@@ -20,4 +18,6 @@ public partial class repuesto
     public virtual categorium? categoria { get; set; }
 
     public virtual ICollection<repuesto_unidades> repuesto_unidades { get; set; } = new List<repuesto_unidades>();
+
+    public virtual ICollection<taller_repuesto> taller_repuestos { get; set; } = new List<taller_repuesto>();
 }

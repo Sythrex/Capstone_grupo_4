@@ -21,7 +21,7 @@ public partial class repuesto_unidades
 
     public virtual repuesto repuesto { get; set; } = null!;
 
-    public virtual ICollection<servicio> servicios { get; set; } = new List<servicio>();
+    public virtual ICollection<servicio_repuesto> servicio_repuestos { get; set; } = new List<servicio_repuesto>();
 
     public virtual taller taller { get; set; } = null!;
 }

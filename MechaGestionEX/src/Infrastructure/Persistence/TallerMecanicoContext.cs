@@ -14,6 +14,8 @@ public partial class TallerMecanicoContext : DbContext
 
     public virtual DbSet<asignacion_talleres> asignacion_talleres { get; set; }
 
+    public virtual DbSet<taller_cliente> taller_cliente { get; set; }
+
     public virtual DbSet<atencion> atencion { get; set; }
 
     public virtual DbSet<bitacora> bitacora { get; set; }
@@ -46,9 +48,13 @@ public partial class TallerMecanicoContext : DbContext
 
     public virtual DbSet<taller> taller { get; set; }
 
+    public virtual DbSet<taller_repuesto> taller_repuesto { get; set; }
+
     public virtual DbSet<tipo_funcionario> tipo_funcionario { get; set; }
 
     public virtual DbSet<tipo_servicio> tipo_servicio { get; set; }
+
+    public virtual DbSet<servicio_repuesto> servicio_repuesto { get; set; }
 
     public virtual DbSet<tipo_vehiculo> tipo_vehiculo { get; set; }
 
@@ -71,6 +77,22 @@ public partial class TallerMecanicoContext : DbContext
                 .HasForeignKey(d => d.taller_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_asignacion_taller");
+
+            entity.Property(e => e.ultimo_activo)
+                .HasDefaultValue(false);
+        });
+
+        modelBuilder.Entity<taller_cliente>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("PK__taller_c__3213E83F40DC9C2B");
+            entity.HasOne(d => d.taller).WithMany(p => p.taller_clientes)
+                .HasForeignKey(d => d.taller_id)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_taller_cliente_taller");
+            entity.HasOne(d => d.cliente).WithMany(p => p.taller_clientes)
+                .HasForeignKey(d => d.cliente_id)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_taller_cliente_cliente");
         });
 
         modelBuilder.Entity<atencion>(entity =>
@@ -151,9 +173,6 @@ public partial class TallerMecanicoContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.descripcion)
                 .HasMaxLength(1000)
-                .IsUnicode(false);
-            entity.Property(e => e.estado)
-                .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.tipo)
                 .HasMaxLength(20)
@@ -311,11 +330,20 @@ public partial class TallerMecanicoContext : DbContext
             entity.Property(e => e.nota)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.stock_anterior)
+                .HasColumnName("stock_anterior");
+            entity.Property(e => e.stock_nuevo)
+                .HasColumnName("stock_nuevo");
 
             entity.HasOne(d => d.repuesto_unidades).WithMany(p => p.log_inventarios)
                 .HasForeignKey(d => d.repuesto_unidades_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_log_repuesto_stock");
+
+            entity.HasOne(d => d.usuario).WithMany(p => p.log_inventarios)
+                .HasForeignKey(d => d.usuario_id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_log_usuario");
         });
 
         modelBuilder.Entity<region>(entity =>
@@ -382,10 +410,6 @@ public partial class TallerMecanicoContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_servicio_atencion");
 
-            entity.HasOne(d => d.repuesto_unidades).WithMany(p => p.servicios)
-                .HasForeignKey(d => d.repuesto_unidades_id)
-                .HasConstraintName("fk_servicio_repuesto_unidades");
-
             entity.HasOne(d => d.tipo_servicio).WithMany(p => p.servicios)
                 .HasForeignKey(d => d.tipo_servicio_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -412,6 +436,21 @@ public partial class TallerMecanicoContext : DbContext
                 .HasForeignKey(d => d.comuna_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_taller_comuna");
+        });
+
+        modelBuilder.Entity<taller_repuesto>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("PK__taller_repuesto__3213E83FABCDEF01");
+
+            entity.HasOne(d => d.taller).WithMany(p => p.taller_repuestos)
+                .HasForeignKey(d => d.taller_id)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_taller_repuesto_taller");
+
+            entity.HasOne(d => d.repuesto).WithMany(p => p.taller_repuestos)
+                .HasForeignKey(d => d.repuesto_id)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_taller_repuesto_repuesto");
         });
 
         modelBuilder.Entity<tipo_funcionario>(entity =>
@@ -489,6 +528,21 @@ public partial class TallerMecanicoContext : DbContext
             entity.HasOne(d => d.tipo).WithMany(p => p.vehiculos)
                 .HasForeignKey(d => d.tipo_id)
                 .HasConstraintName("fk_vehiculo_tipo");
+        });
+
+        modelBuilder.Entity<servicio_repuesto>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("PK__servicio__3213E83FA8BBE915");
+
+            entity.HasOne(d => d.servicio).WithMany(p => p.servicio_repuestos)
+                .HasForeignKey(d => d.servicio_id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_servicio_repuesto_servicio");
+
+            entity.HasOne(d => d.repuesto_unidades).WithMany(p => p.servicio_repuestos)
+                .HasForeignKey(d => d.repuesto_unidades_id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_servicio_repuesto_unidades");
         });
 
         OnModelCreatingPartial(modelBuilder);

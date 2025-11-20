@@ -17,9 +17,13 @@ public partial class taller
 
     public virtual ICollection<asignacion_talleres> asignacion_talleres { get; set; } = new List<asignacion_talleres>();
 
+    public virtual ICollection<taller_cliente> taller_clientes { get; set; } = new List<taller_cliente>();
+
     public virtual ICollection<atencion> atencions { get; set; } = new List<atencion>();
 
     public virtual comuna comuna { get; set; } = null!;
 
     public virtual ICollection<repuesto_unidades> repuesto_unidades { get; set; } = new List<repuesto_unidades>();
+
+    public virtual ICollection<taller_repuesto> taller_repuestos { get; set; } = new List<taller_repuesto>();
 }

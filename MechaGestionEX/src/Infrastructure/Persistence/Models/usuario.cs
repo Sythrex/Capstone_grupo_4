@@ -18,5 +18,7 @@ public partial class usuario
     public virtual cliente? cliente { get; set; }
 
     public virtual funcionario? funcionario { get; set; }
+
+    public virtual ICollection<log_inventario> log_inventarios{ get; set; } = new List<log_inventario>();
 }
 

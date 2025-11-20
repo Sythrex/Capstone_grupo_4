@@ -8,7 +8,10 @@
 <form asp-action="Create" method="post" class="row g-3">
     <div class="col-md-4">
         <label asp-for="rut" class="form-label"></label>
-        <input asp-for="rut" class="form-control" />
+        <div class="input-group">
+            <input asp-for="rut" class="form-control" id="rutInput" />
+            <button type="button" class="btn btn-outline-secondary" id="checkRutBtn">Chequear</button>
+        </div>
         <span asp-validation-for="rut" class="text-danger"></span>
     </div>
     <div class="col-md-6">
@@ -32,9 +35,20 @@
         <span asp-validation-for="direccion" class="text-danger"></span>
     </div>
     <div class="col-md-3">
-        <label asp-for="comuna_id" class="form-label"></label>
-        <input asp-for="comuna_id" class="form-control" />
-        <div class="form-text">(En la fase 2 lo haremos dropdown)</div>
+        <label for="regionSelect" class="form-label">Región</label>
+        <select id="regionSelect" class="form-select select2 dark" name="region_temp" data-placeholder="Seleccione una región">
+            <option value="">Seleccione una región</option>
+            @foreach (var r in ViewBag.Regions)
+            {
+                <option value="@r.id">@r.nombre</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="comuna_id" class="form-label">Comuna</label>
+        <select asp-for="comuna_id" id="comunaSelect" class="form-select select2" disabled data-placeholder="Seleccione una comuna">
+            <option value="">Seleccione una comuna</option>
+        </select>
         <span asp-validation-for="comuna_id" class="text-danger"></span>
     </div>
 
@@ -44,6 +58,33 @@
     </div>
 </form>
 
+<div class="modal fade" id="clienteExistenteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cliente Existente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Se encontró un cliente con este RUT:</p>
+                <dl id="clienteDetails">
+                </dl>
+                <p>¿Desea agregarlo a este taller?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="addToTallerBtn">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
+    <script>
+        window.comunasByRegion = @Html.Raw(Json.Serialize(ViewBag.ComunasByRegion ?? new Dictionary<int, List<dynamic>>()));
+        window.currentRegionId = 0;
+        window.currentComunaId = 0;
+    </script>
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/cliente_crud.js"></script>
 }

@@ -22,6 +22,14 @@ builder.Services.AddDbContext<TallerMecanicoContext>(opt =>
 );
 builder.Services.AddScoped<IPasswordHasher<usuario>, PasswordHasher<usuario>>();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // 30 minutos logout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
 
 // Pipeline HTTP
@@ -38,6 +46,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
