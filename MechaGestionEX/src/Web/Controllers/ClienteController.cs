@@ -12,7 +12,7 @@ namespace Web.Controllers
         {
             ViewBag.Nombre = User.Identity?.Name ?? "Cliente";
             ViewBag.ClienteId = User.FindFirst("ClienteId")?.Value ?? "";
-            return View(); // ahora encontrará Views/Cliente/Panel.cshtml
+            return View();
         }
     }
 }

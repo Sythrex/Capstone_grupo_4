@@ -333,6 +333,10 @@ public partial class TallerMecanicoContext : DbContext
             entity.Property(e => e.nota)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.stock_anterior)
+                .HasColumnName("stock_anterior");
+            entity.Property(e => e.stock_nuevo)
+                .HasColumnName("stock_nuevo");
 
             entity.HasOne(d => d.repuesto_unidades).WithMany(p => p.log_inventarios)
                 .HasForeignKey(d => d.repuesto_unidades_id)

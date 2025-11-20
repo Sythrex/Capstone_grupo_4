@@ -8,20 +8,12 @@
 
 <div class="mb-3">
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarRepuestoModal">Agregar Repuesto</button>
+    <button class="btn btn-warning ms-2" id="editarStockGlobal">Editar Stock</button>
+    <button class="btn btn-success ms-2" id="guardarCambios" style="display:none;">Guardar Cambios</button>
+    <button class="btn btn-secondary ms-2" id="cancelarEdicion" style="display:none;">Cancelar Edición</button>
 </div>
 
-<div class="mb-3">
-    <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o SKU...">
-    <select id="categoriaSelect" class="form-select mt-2" data-placeholder="Filtrar por categoría">
-        <option></option>
-        @foreach (var cat in ViewBag.Categorias)
-        {
-            <option value="@cat.id">@cat.nombre</option>
-        }
-    </select>
-</div>
-
-<table class="table table-striped table-hover table-responsive">
+<table id="inventarioTable" class="table table-striped table-hover table-responsive">
     <thead>
         <tr>
             <th>SKU</th>
@@ -34,25 +26,26 @@
             <th>Acciones</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr class="@(item.StockDisponible < 5 ? "table-danger" : "")">
-                <td>@item.Sku</td>
-                <td>@item.Nombre</td>
-                <td>@item.Marca</td>
-                <td>@item.CategoriaNombre</td>
-                <td>@item.StockDisponible</td>
-                <td>@item.StockReservado</td>
-                <td>@item.PrecioUnitario</td>
-                <td>
-                    <button class="btn btn-sm btn-warning editarStock" data-id="@item.RepuestoId">Editar Stock</button>
-                    <button class="btn btn-sm btn-info verLogs" data-id="@item.RepuestoId">Ver Logs</button>
-                </td>
-            </tr>
-        }
-    </tbody>
+    <tbody></tbody>
 </table>
+
+<div class="modal fade" id="notaBatchModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nota para Cambios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <textarea id="notaBatch" class="form-control" placeholder="Nota para los logs de inventario (opcional)"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmarGuardar">Confirmar y Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal Agregar Repuesto -->
 <div class="modal fade" id="agregarRepuestoModal" tabindex="-1">
@@ -122,6 +115,20 @@
         </div>
     </div>
 </div>
+
+@section Styles {
+        <style>
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        </style>
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

@@ -1,0 +1,27 @@
+﻿@model List<Infrastructure.Persistence.Models.log_inventario>
+
+<table id="logsTable" class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Variación</th>
+            <th>Stock Anterior</th>
+            <th>Stock Nuevo</th>
+            <th>Nota</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model)
+        {
+            <tr>
+                <td>@log.fecha_log.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                <td>@(log.usuario?.nombre_usuario ?? "Sistema")</td>
+                <td>@log.variacion_stock</td>
+                <td>@log.stock_anterior</td>
+                <td>@log.stock_nuevo</td>
+                <td>@log.nota</td>
+            </tr>
+        }
+    </tbody>
+</table>

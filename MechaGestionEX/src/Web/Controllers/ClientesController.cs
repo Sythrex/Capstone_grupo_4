@@ -15,7 +15,6 @@ namespace Web.Controllers
 
         public ClientesController(TallerMecanicoContext db) => _db = db;
 
-        // GET: /clientes (Filtrado por taller_cliente)
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
@@ -35,7 +34,6 @@ namespace Web.Controllers
             return View(data);
         }
 
-        // GET: /clientes/details/5 (Con chequeo de asociación)
         [HttpGet("details/{id:int}")]
         public async Task<IActionResult> Details(int id)
         {
@@ -52,7 +50,6 @@ namespace Web.Controllers
             return View(entity);
         }
 
-        // GET: /clientes/create
         [HttpGet("create")]
         public async Task<IActionResult> Create()
         {
@@ -65,14 +62,12 @@ namespace Web.Controllers
             return View(new cliente());
         }
 
-        // POST: /clientes/create
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("rut,nombre,correo,telefono,direccion,comuna_id")] cliente model)
         {
             if (!ModelState.IsValid)
             {
-                // Recarga ViewBags
                 ViewBag.Regions = await _db.region.AsNoTracking().ToListAsync();
                 var comunasByRegion = await _db.comuna.AsNoTracking().GroupBy(c => c.region_id).ToDictionaryAsync(g => g.Key, g => g.ToList());
                 ViewBag.ComunasByRegion = comunasByRegion;
@@ -83,7 +78,6 @@ namespace Web.Controllers
                 int.Parse(User.FindFirstValue("TallerId") ?? "0");
             if (tallerId == 0) return BadRequest("No tienes taller asignado.");
 
-            // Chequeo duplicado por RUT
             var existe = await _db.cliente.AnyAsync(c => c.rut == model.rut);
             if (existe)
             {
@@ -100,7 +94,6 @@ namespace Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /clientes/edit/5
         [HttpGet("edit/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -121,7 +114,6 @@ namespace Web.Controllers
             return View(entity);
         }
 
-        // POST: /clientes/edit/5
         [HttpPost("edit/{id:int}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("id,rut,nombre,correo,telefono,direccion,comuna_id")] cliente model)
@@ -138,7 +130,6 @@ namespace Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /clientes/delete/5
         [HttpGet("delete/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -155,7 +146,6 @@ namespace Web.Controllers
             return View(entity);
         }
 
-        // POST: /clientes/delete/5
         [HttpPost("delete/{id:int}"), ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

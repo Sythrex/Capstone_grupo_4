@@ -15,7 +15,6 @@ namespace Web.Controllers
 
         public FuncionariosController(TallerMecanicoContext db) => _db = db;
 
-        // GET: /funcionarios
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
@@ -34,7 +33,6 @@ namespace Web.Controllers
             return View(data);
         }
 
-        // GET: /funcionarios/details/5
         [HttpGet("details/{id:int}")]
         public async Task<IActionResult> Details(int id)
         {
@@ -52,7 +50,6 @@ namespace Web.Controllers
             return View(entity);
         }
 
-        // GET: /funcionarios/create
         [HttpGet("create")]
         public async Task<IActionResult> Create()
         {
@@ -60,7 +57,6 @@ namespace Web.Controllers
             return View(new funcionario());
         }
 
-        // POST: /funcionarios/create
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("rut,nombre,especialidad,activo,tipo_id")] funcionario model)
@@ -75,7 +71,6 @@ namespace Web.Controllers
                 int.Parse(User.FindFirstValue("TallerId") ?? "0");
             if (tallerId == 0) return BadRequest("No tienes taller asignado.");
 
-            // Chequeo duplicado por RUT
             var existe = await _db.funcionario.AnyAsync(f => f.rut == model.rut);
             if (existe)
             {
@@ -87,7 +82,6 @@ namespace Web.Controllers
             _db.funcionario.Add(model);
             await _db.SaveChangesAsync();
 
-            // Asigna al taller
             var hoy = DateOnly.FromDateTime(DateTime.Now);
             _db.asignacion_talleres.Add(new asignacion_talleres
             {
@@ -102,7 +96,6 @@ namespace Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /funcionarios/edit/5
         [HttpGet("edit/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -121,7 +114,6 @@ namespace Web.Controllers
             return View(entity);
         }
 
-        // POST: /funcionarios/edit/5
         [HttpPost("edit/{id:int}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("id,rut,nombre,especialidad,activo,tipo_id")] funcionario model)
@@ -138,7 +130,6 @@ namespace Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /funcionarios/delete/5
         [HttpGet("delete/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -153,7 +144,6 @@ namespace Web.Controllers
             return View(entity);
         }
 
-        // POST: /funcionarios/delete/5
         [HttpPost("delete/{id:int}"), ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -161,7 +151,6 @@ namespace Web.Controllers
             var entity = await _db.funcionario.FindAsync(id);
             if (entity != null)
             {
-                // Opcional: Elimina asignaciones relacionadas si cascade no lo hace
                 var asignaciones = _db.asignacion_talleres.Where(at => at.funcionario_id == id);
                 _db.asignacion_talleres.RemoveRange(asignaciones);
 

@@ -58,7 +58,6 @@ namespace web.Controllers
                 return View(model);
             }
 
-            // Claims básicos
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.nombre_usuario ?? ""),

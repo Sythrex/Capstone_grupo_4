@@ -15,6 +15,10 @@ public partial class log_inventario
 
     public int variacion_stock { get; set; }
 
+    public int stock_anterior { get; set; }
+
+    public int stock_nuevo { get; set; }
+
     public string? nota { get; set; }
 
     public virtual repuesto_unidades repuesto_unidades { get; set; } = null!;
