@@ -9,46 +9,54 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  DOTNET_VERSION: '8.0.x'
+  SOLUTION_FILE_PATH: 'MechaGestionEX/src/MechaGestionEX.sln'
+  PUBLISH_PATH: './published'
+
 jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup MSBuild path
-        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1.0.5
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
 
-      - name: Restore NuGet packages
-        run: nuget restore
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --configuration Release --no-restore
 
-      - name: Publish to folder
-        run: msbuild /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
+      - name: Publish
+        run: dotnet publish ${{ env.SOLUTION_FILE_PATH }} --configuration Release --no-build --output ${{ env.PUBLISH_PATH }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: ASP-app
-          path: '/published/**'
+          name: asp-app
+          path: ${{ env.PUBLISH_PATH }}
 
   deploy:
     runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: ASP-app
-      
+          name: asp-app
+          path: ${{ env.PUBLISH_PATH }}
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -62,5 +70,4 @@ jobs:
         with:
           app-name: 'mechagestionexAPP'
           slot-name: 'Production'
-          package: .
-          
+          package: ${{ env.PUBLISH_PATH }}
