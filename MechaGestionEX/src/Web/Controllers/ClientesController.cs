@@ -121,7 +121,6 @@ namespace Web.Controllers
             if (id != model.id) return BadRequest();
             if (!ModelState.IsValid)
             {
-                // Recarga ViewBags...
                 return View(model);
             }
 

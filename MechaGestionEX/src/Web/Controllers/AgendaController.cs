@@ -1,15 +1,17 @@
 ﻿using Infrastructure.Migrations;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Web.Models;
 using Web.ViewModels;
-using Microsoft.EntityFrameworkCore;
 
 namespace Web.Controllers
 {
+    [Authorize(Roles = "Funcionario")]
     public class AgendaController : Controller
     {
         private readonly TallerMecanicoContext _context;
@@ -55,25 +57,23 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CrearAgendaViewModel viewModel)
         {
-            //var nombreUsuario = User.FindFirstValue(ClaimTypes.Name);
-            ////var usuario = await _context.usuario.FirstOrDefaultAsync(u => u.nombre_usuario == nombreUsuario);
-            //var administrativoId = usuario?.funcionario_id;
-
-            // usuario hardcodeado
-            var usuario = new Infrastructure.Persistence.Models.usuario
+            var funcionarioIdClaim = User.FindFirstValue("FuncionarioId");
+            if (string.IsNullOrEmpty(funcionarioIdClaim) || !int.TryParse(funcionarioIdClaim, out int funcionarioId))
             {
-                id = 1,
-                nombre_usuario = "admin",
-                password_hash = null,
-                cliente_id = null,
-                funcionario_id = 1 
-            };
+                ModelState.AddModelError(string.Empty, "No se pudo identificar al funcionario. Asegúrese de que el claim 'FuncionarioId' esté correctamente asignado e inicie sesión nuevamente.");
+                viewModel.ClientesDisponibles = new SelectList(await _context.cliente.ToListAsync(), "id", "nombre", viewModel.ClienteId);
+                return View(viewModel);
+            }
 
-            var administrativoId = usuario.funcionario_id;
+            var tallerIdClaim = User.FindFirstValue("TallerId");
+            var tallerIdSession = HttpContext.Session.GetInt32("TallerId");
+            int tallerId = tallerIdSession ?? (int.TryParse(tallerIdClaim, out int parsedTallerId) ? parsedTallerId : 0);
 
-            if (administrativoId == null)
+            if (tallerId == 0)
             {
-                ModelState.AddModelError(string.Empty, "No se pudo identificar al funcionario. Inicie sesión nuevamente.");
+                ModelState.AddModelError(string.Empty, "No se pudo identificar el taller asignado. Asegúrese de que el claim o sesión 'TallerId' esté correctamente configurado.");
+                viewModel.ClientesDisponibles = new SelectList(await _context.cliente.ToListAsync(), "id", "nombre", viewModel.ClienteId);
+                return View(viewModel);
             }
 
             if (ModelState.IsValid)
@@ -91,8 +91,8 @@ namespace Web.Controllers
                     observaciones = viewModel.Observaciones,
                     cliente_id = viewModel.ClienteId,
                     vehiculo_id = viewModel.VehiculoId,
-                    administrativo_id = administrativoId.Value,
-                    taller_id = 1, // modificar para asignar taller logeado
+                    administrativo_id = funcionarioId,
+                    taller_id = tallerId,
                     agenda = nuevaAgenda
                 };
 

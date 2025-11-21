@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Mis Citas";
+    Layout = "_Layout_Cliente";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">Agenda de atenciones</h1>
+    <div>
+        <a href="@Url.Action("CreateAgenda", "Cliente")" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Solicitar nueva hora
+        </a>
+    </div>
+</div>
+
+<div id="calendario"></div>
+
+@section Scripts {
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js'></script>
+    <script src="~/js/agenda-calendario-cliente.js"></script>
+}

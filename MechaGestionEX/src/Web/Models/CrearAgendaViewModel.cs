@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Web.ViewModels // Asegúrate que el namespace sea correcto
+namespace Web.ViewModels
 {
     public class CrearAgendaViewModel
     {

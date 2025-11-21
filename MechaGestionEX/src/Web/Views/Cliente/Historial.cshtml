@@ -1,7 +1,7 @@
 ﻿@model List<Web.Models.AtencionHistRow>
 @{
     ViewData["Title"] = "Historial de atenciones";
-    Layout = "_Layout"; // o tu "_Layout_Cliente" si ya existe correctamente
+    Layout = "_Layout_Cliente";
 }
 
 <div class="container py-4">
@@ -26,17 +26,16 @@
                 <tbody>
                     @foreach (var x in Model)
                     {
-                        var detalleId = x.AgendaId ?? x.AtencionId; // preferencia por agenda si tu Detalle la usa
-                                                                    <tr>
-                                                                        <td>@(x.FechaHora?.ToString("dd-MM-yyyy HH:mm") ?? "-")</td>
-                                                                        <td>@(string.IsNullOrWhiteSpace(x.Estado) ? "Pendiente" : x.Estado)</td>
-                                                                        <td>@(string.IsNullOrWhiteSpace(x.Taller) ? "-" : x.Taller)</td>
-                                                                        <td class="text-nowrap">
-                                @if (detalleId > 0)
+                        <tr>
+                            <td>@(x.FechaHora?.ToString("dd-MM-yyyy HH:mm") ?? "-")</td>
+                            <td>@(string.IsNullOrWhiteSpace(x.Estado) ? "Pendiente" : x.Estado)</td>
+                            <td>@(string.IsNullOrWhiteSpace(x.Taller) ? "-" : x.Taller)</td>
+                            <td class="text-nowrap">
+                                @if (x.AtencionId > 0)
                                 {
                                     <a class="btn btn-sm btn-primary"
                                        asp-controller="Cliente" asp-action="Atencion"
-                                       asp-route-id="@detalleId">
+                                       asp-route-id="@x.AtencionId">
                                         Ver detalle
                                     </a>
                                 }

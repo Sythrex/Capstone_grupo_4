@@ -1,0 +1,58 @@
+﻿@model Web.Models.CrearAgendaClienteViewModel
+
+@{
+    ViewData["Title"] = "Solicitar Nueva Hora";
+    Layout = "_Layout_Cliente";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="@Url.Action("Agenda", "Cliente")" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle me-2"></i>Volver
+    </a>
+    <h3>SOLICITAR NUEVA HORA</h3>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="CreateAgenda" asp-controller="Cliente">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h4>Datos de la Cita</h4>
+            <div class="mb-3">
+                <label asp-for="FechaAgenda" class="form-label"></label>
+                <input asp-for="FechaAgenda" type="datetime-local" class="form-control" />
+                <span asp-validation-for="FechaAgenda" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Comentarios" class="form-label"></label>
+                <textarea asp-for="Comentarios" class="form-control" rows="3"></textarea>
+            </div>
+
+            <hr />
+
+            <h4>Datos del Vehículo</h4>
+            <div class="mb-3">
+                <label asp-for="VehiculoId" class="form-label"></label>
+                <select asp-for="VehiculoId" asp-items="@Model.VehiculosDisponibles" class="form-select">
+                    <option value="">-- (Opcional) Seleccione un Vehículo --</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Observaciones" class="form-label"></label>
+                <textarea asp-for="Observaciones" class="form-control" rows="3" required></textarea>
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Solicitar Hora</button>
+                <a asp-action="Agenda" asp-controller="Cliente" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

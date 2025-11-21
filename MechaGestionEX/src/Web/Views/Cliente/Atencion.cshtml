@@ -1,0 +1,154 @@
+﻿@{
+    Layout = "_Layout_Cliente";
+}
+
+@model Infrastructure.Persistence.Models.atencion
+
+@using Infrastructure.Persistence.Models
+
+@{
+    var bitacoras = ViewBag.Bitacoras as List<bitacora> ?? new List<bitacora>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="@Url.Action("Historial", "Cliente")" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle me-2"></i>Volver al Historial
+    </a>
+    <h3>DETALLE DE ATENCIÓN</h3>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-person-fill me-2"></i>
+                <strong>Información del Cliente y Vehículo</strong>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Cliente</dt>
+                    <dd class="col-sm-8">@Model.cliente?.nombre</dd>
+
+                    <dt class="col-sm-4">RUT Cliente</dt>
+                    <dd class="col-sm-8">@Model.cliente?.rut</dd>
+
+                    <dt class="col-sm-4">Vehículo</dt>
+                    <dd class="col-sm-8">@Model.vehiculo?.patente</dd>
+
+                    <dt class="col-sm-4">Tipo</dt>
+                    <dd class="col-sm-8">@Model.vehiculo?.tipo?.nombre</dd>
+
+                    <dt class="col-sm-4">Año</dt>
+                    <dd class="col-sm-8">@Model.vehiculo?.anio</dd>
+
+                    <dt class="col-sm-4">Kilometraje</dt>
+                    <dd class="col-sm-8">@Model.kilometraje_ingreso.ToString("N0") km</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-calendar-event-fill me-2"></i>
+                <strong>Detalles de la Cita</strong>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Fecha Agendada</dt>
+                    <dd class="col-sm-8">@Model.agenda?.fecha_agenda.ToString("dddd, dd 'de' MMMM 'de' yyyy, HH:mm")</dd>
+
+                    <dt class="col-sm-4">Estado Actual</dt>
+                    <dd class="col-sm-8"><span class="badge bg-primary">@Model.estado</span></dd>
+
+                    <dt class="col-sm-4">Taller</dt>
+                    <dd class="col-sm-8">@Model.taller?.razon_social</dd>
+
+                    <dt class="col-sm-4">Mecánico Asignado</dt>
+                    <dd class="col-sm-8">@Model.mecanico?.nombre</dd>
+
+                    <dt class="col-sm-4">Administrativo</dt>
+                    <dd class="col-sm-8">@Model.administrativo?.nombre</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-tools me-2"></i>
+        <strong>Servicios Prestados</strong>
+    </div>
+    <div class="card-body">
+        @if (Model.servicios.Any())
+        {
+            <ul class="list-group">
+                @foreach (var servicio in Model.servicios)
+                {
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>@servicio.tipo_servicio.nombre</strong>
+                            <span>Subtotal: $@servicio.sub_total?.ToString("N0")</span>
+                        </div>
+                        <p class="text-muted">@servicio.descripcion</p>
+                        @if (servicio.servicio_repuestos.Any())
+                        {
+                            <ul class="list-group list-group-flush mt-2">
+                                @foreach (var repuesto in servicio.servicio_repuestos)
+                                {
+                                    <li class="list-group-item small">
+                                        @repuesto.repuesto_unidades.repuesto.sku - @repuesto.repuesto_unidades.repuesto.nombre (Cantidad: @repuesto.cantidad)
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted">No hay servicios asociados a esta atención.</p>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-chat-dots me-2"></i>
+        <strong>Comentarios (Bitácora)</strong>
+    </div>
+    <div class="card-body">
+        @if (bitacoras.Any())
+        {
+            <ul class="list-group">
+                @foreach (var bit in bitacoras)
+                {
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>@bit.descripcion</span>
+                            <small class="text-muted">@bit.created_at.ToString("dd/MM/yyyy HH:mm")</small>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted">No hay comentarios aún.</p>
+        }
+
+        <form asp-action="AgregarComentario" asp-controller="Cliente" asp-route-id="@Model.id" method="post" class="mt-3">
+            @Html.AntiForgeryToken()
+            <div class="mb-3">
+                <label for="comentario" class="form-label">Agregar Comentario</label>
+                <textarea id="comentario" name="comentario" class="form-control" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Enviar Comentario
+            </button>
+        </form>
+    </div>
+</div>

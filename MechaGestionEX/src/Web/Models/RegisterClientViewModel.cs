@@ -6,7 +6,6 @@ namespace Web.Models
 {
     public class RegisterClientViewModel
     {
-        // — Cuenta (usuario)
         [Display(Name = "Nombre de usuario")]
         [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
         [MaxLength(100, ErrorMessage = "Máximo 100 caracteres.")]
@@ -29,7 +28,6 @@ namespace Web.Models
         [Compare(nameof(Password), ErrorMessage = "Las contraseñas no coinciden.")]
         public string ConfirmPassword { get; set; } = "";
 
-        // — Datos de cliente
         [Display(Name = "RUT")]
         [Required(ErrorMessage = "El RUT es obligatorio.")]
         [MaxLength(10, ErrorMessage = "Máximo 10 caracteres.")]
@@ -51,7 +49,6 @@ namespace Web.Models
         [Required(ErrorMessage = "La comuna es obligatoria.")]
         public int? ComunaId { get; set; }
 
-        // Llenaremos esta lista en el controlador en el PASO 3
         public IEnumerable<SelectListItem>? Comunas { get; set; }
     }
 }
