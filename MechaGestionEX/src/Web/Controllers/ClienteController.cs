@@ -276,5 +276,235 @@ namespace Web.Controllers
             return Json(vehiculos);
         }
 
+        [HttpGet("MisDatos")]
+        public async Task<IActionResult> MisDatos()
+        {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            if (clienteId <= 0) return Unauthorized();
+
+            var cliente = await _db.cliente
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.id == clienteId);
+
+            if (cliente == null) return NotFound();
+
+            var comunas = await _db.comuna
+                .Select(c => new SelectListItem { Value = c.id.ToString(), Text = c.nombre })
+                .ToListAsync();
+
+            var viewModel = new MisDatosViewModel
+            {
+                Rut = cliente.rut,
+                Nombre = cliente.nombre,
+                Correo = cliente.correo,
+                Telefono = cliente.telefono,
+                Direccion = cliente.direccion,
+                ComunaId = cliente.comuna_id,
+                Comunas = new SelectList(comunas, "Value", "Text", cliente.comuna_id)
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost("MisDatos")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MisDatos(MisDatosViewModel viewModel)
+        {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            if (clienteId <= 0) return Unauthorized();
+
+            if (!ModelState.IsValid)
+            {
+                var comunas = await _db.comuna
+                    .Select(c => new SelectListItem { Value = c.id.ToString(), Text = c.nombre })
+                    .ToListAsync();
+                viewModel.Comunas = new SelectList(comunas, "Value", "Text", viewModel.ComunaId);
+                return View(viewModel);
+            }
+
+            var cliente = await _db.cliente.FindAsync(clienteId);
+            if (cliente == null) return NotFound();
+
+            cliente.rut = viewModel.Rut;
+            cliente.nombre = viewModel.Nombre;
+            cliente.correo = viewModel.Correo;
+            cliente.telefono = viewModel.Telefono;
+            cliente.direccion = viewModel.Direccion;
+            cliente.comuna_id = viewModel.ComunaId;
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction("Panel");
+        }
+
+        [HttpGet("Vehiculos")]
+        public async Task<IActionResult> Vehiculos()
+        {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            if (clienteId <= 0) return Unauthorized();
+
+            var vehiculos = await _db.cliente_vehiculo
+                .Where(cv => cv.cliente_id == clienteId)
+                .Include(cv => cv.vehiculo)
+                    .ThenInclude(v => v.tipo)
+                .Select(cv => cv.vehiculo)
+                .ToListAsync();
+
+            return View(vehiculos);
+        }
+
+        [HttpGet("CreateVehiculo")]
+        public async Task<IActionResult> CreateVehiculo()
+        {
+            var tipos = await _db.tipo_vehiculo
+                .Select(t => new SelectListItem { Value = t.id.ToString(), Text = t.nombre })
+                .ToListAsync();
+
+            var viewModel = new VehiculoViewModel
+            {
+                TiposVehiculo = new SelectList(tipos, "Value", "Text")
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost("CreateVehiculo")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateVehiculo(VehiculoViewModel viewModel)
+        {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            if (clienteId <= 0) return Unauthorized();
+
+            if (!ModelState.IsValid)
+            {
+                var tipos = await _db.tipo_vehiculo
+                    .Select(t => new SelectListItem { Value = t.id.ToString(), Text = t.nombre })
+                    .ToListAsync();
+                viewModel.TiposVehiculo = new SelectList(tipos, "Value", "Text", viewModel.TipoId);
+                return View(viewModel);
+            }
+
+            var nuevoVehiculo = new vehiculo
+            {
+                patente = viewModel.Patente,
+                vin = viewModel.Vin,
+                anio = viewModel.Anio,
+                kilometraje = viewModel.Kilometraje,
+                color = viewModel.Color,
+                tipo_id = viewModel.TipoId
+            };
+
+            _db.vehiculo.Add(nuevoVehiculo);
+            await _db.SaveChangesAsync();
+
+            var nuevoLink = new cliente_vehiculo
+            {
+                cliente_id = clienteId,
+                vehiculo_id = nuevoVehiculo.id,
+                principal = false,
+                fecha_desde = DateOnly.FromDateTime(DateTime.Now),
+                created_at = DateOnly.FromDateTime(DateTime.Now)
+            };
+
+            _db.cliente_vehiculo.Add(nuevoLink);
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction("Vehiculos");
+        }
+
+        [HttpGet("EditVehiculo/{id}")]
+        public async Task<IActionResult> EditVehiculo(int id)
+        {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            if (clienteId <= 0) return Unauthorized();
+
+            var vehiculo = await _db.cliente_vehiculo
+                .Where(cv => cv.cliente_id == clienteId && cv.vehiculo_id == id)
+                .Select(cv => cv.vehiculo)
+                .FirstOrDefaultAsync();
+
+            if (vehiculo == null) return NotFound();
+
+            var tipos = await _db.tipo_vehiculo
+                .Select(t => new SelectListItem { Value = t.id.ToString(), Text = t.nombre })
+                .ToListAsync();
+
+            var viewModel = new VehiculoViewModel
+            {
+                Id = vehiculo.id,
+                Patente = vehiculo.patente,
+                Vin = vehiculo.vin,
+                Anio = vehiculo.anio,
+                Kilometraje = vehiculo.kilometraje,
+                Color = vehiculo.color,
+                TipoId = vehiculo.tipo_id,
+                TiposVehiculo = new SelectList(tipos, "Value", "Text", vehiculo.tipo_id)
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost("EditVehiculo/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditVehiculo(int id, VehiculoViewModel viewModel)
+        {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            if (clienteId <= 0) return Unauthorized();
+
+            if (id != viewModel.Id) return BadRequest();
+
+            if (!ModelState.IsValid)
+            {
+                var tipos = await _db.tipo_vehiculo
+                    .Select(t => new SelectListItem { Value = t.id.ToString(), Text = t.nombre })
+                    .ToListAsync();
+                viewModel.TiposVehiculo = new SelectList(tipos, "Value", "Text", viewModel.TipoId);
+                return View(viewModel);
+            }
+
+            var vehiculo = await _db.vehiculo.FindAsync(id);
+            if (vehiculo == null) return NotFound();
+
+            var linkExists = await _db.cliente_vehiculo.AnyAsync(cv => cv.cliente_id == clienteId && cv.vehiculo_id == id);
+            if (!linkExists) return Unauthorized();
+
+            vehiculo.patente = viewModel.Patente;
+            vehiculo.vin = viewModel.Vin;
+            vehiculo.anio = viewModel.Anio;
+            vehiculo.kilometraje = viewModel.Kilometraje;
+            vehiculo.color = viewModel.Color;
+            vehiculo.tipo_id = viewModel.TipoId;
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction("Vehiculos");
+        }
+
+        [HttpPost("DeleteVehiculo/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteVehiculo(int id)
+        {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            if (clienteId <= 0) return Unauthorized();
+
+            var link = await _db.cliente_vehiculo
+                .FirstOrDefaultAsync(cv => cv.cliente_id == clienteId && cv.vehiculo_id == id);
+
+            if (link == null) return NotFound();
+
+            _db.cliente_vehiculo.Remove(link);
+
+            var otherLinks = await _db.cliente_vehiculo.AnyAsync(cv => cv.vehiculo_id == id && cv.cliente_id != clienteId);
+            if (!otherLinks)
+            {
+                var vehiculo = await _db.vehiculo.FindAsync(id);
+                if (vehiculo != null) _db.vehiculo.Remove(vehiculo);
+            }
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction("Vehiculos");
+        }
+
     }
 }

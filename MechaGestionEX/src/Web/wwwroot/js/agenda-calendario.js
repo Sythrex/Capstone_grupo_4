@@ -1,8 +1,9 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
-
     var calendarEl = document.getElementById('calendario');
-
     if (calendarEl) {
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
             locale: 'es',
@@ -17,8 +18,10 @@
                 day: 'Día'
             },
             height: 'auto',
-            slotMinTime: '07:00:00',
-            slotMaxTime: '19:00:00',
+            slotMinTime: '09:00:00',
+            slotMaxTime: '17:00:00',
+            slotDuration: '01:00:00',
+            hiddenDays: [0, 6],
             events: {
                 url: '/Agenda/GetAgendas',
                 failure: function () {
@@ -30,9 +33,21 @@
                 if (info.event.url) {
                     window.location.href = info.event.url;
                 }
+            },
+            selectable: true,
+            select: function (info) {
+                var url = '/Agenda/Create?fecha=' + encodeURIComponent(info.startStr);
+                window.location.href = url;
+            },
+            selectOverlap: false,
+            selectAllow: function (selectInfo) {
+                return selectInfo.start >= today;
+            },
+            selectConstraint: {
+                startTime: '09:00',
+                endTime: '17:00'
             }
         });
-
         calendar.render();
     }
 });

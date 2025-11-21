@@ -19,7 +19,13 @@
 
     <h6 class="text-uppercase text-secondary px-2 mt-3 mb-2">Cuenta</h6>
 
-    <a class="nav-link px-3 py-2 rounded disabled">
+    <a class="nav-link px-3 py-2 rounded @CA("Cliente", "MisDatos")"
+       asp-controller="Cliente" asp-action="MisDatos">
         <i class="bi bi-person-gear me-2"></i> Mis datos
+    </a>
+
+    <a class="nav-link px-3 py-2 rounded @CA("Cliente", "Vehiculos")"
+       asp-controller="Cliente" asp-action="Vehiculos">
+        <i class="bi bi-car-front me-2"></i> Mis vehículos
     </a>
 </div>

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Infrastructure.Persistence.Models.vehiculo>
+
+@{
+    ViewData["Title"] = "Mis Vehículos";
+    Layout = "_Layout_Cliente";
+}
+
+<h2>Mis Vehículos</h2>
+
+<a asp-action="CreateVehiculo" class="btn btn-success mb-3">Agregar Vehículo</a>
+
+<div class="row">
+    @foreach (var vehiculo in Model)
+    {
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@vehiculo.patente</h5>
+                    <p class="card-text">
+                        VIN: @vehiculo.vin<br />
+                        Año: @vehiculo.anio<br />
+                        Kilometraje: @(vehiculo.kilometraje ?? 0)<br />
+                        Color: @vehiculo.color<br />
+                        Tipo: @(vehiculo.tipo?.nombre ?? "N/A")
+                    </p>
+                    <a asp-action="EditVehiculo" asp-route-id="@vehiculo.id" class="btn btn-primary">Editar</a>
+                    <form asp-action="DeleteVehiculo" asp-route-id="@vehiculo.id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este vehículo?');">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
