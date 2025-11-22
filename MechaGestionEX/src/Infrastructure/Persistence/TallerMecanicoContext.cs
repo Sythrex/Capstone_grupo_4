@@ -159,7 +159,6 @@ public partial class TallerMecanicoContext : DbContext
             entity.Property(e => e.fecha_agenda)
                   .IsRequired();
             entity.Property(e => e.estado).HasMaxLength(20);
-            entity.Property(e => e.comentarios).HasMaxLength(200);
         });
 
         modelBuilder.Entity<bitacora>(entity =>

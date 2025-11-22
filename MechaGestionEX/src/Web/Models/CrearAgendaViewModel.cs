@@ -15,9 +15,6 @@ namespace Web.ViewModels
         [Display(Name = "Fecha y Hora de la Cita")]
         public DateTime FechaAgenda { get; set; }
 
-        [StringLength(200)]
-        public string? Comentarios { get; set; }
-
         [Display(Name = "Observaciones Iniciales")]
         [StringLength(200)]
         public string? Observaciones { get; set; }

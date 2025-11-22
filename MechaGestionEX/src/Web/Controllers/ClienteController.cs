@@ -220,7 +220,6 @@ namespace Web.Controllers
                 {
                     titulo = "Solicitud de Cliente",
                     fecha_agenda = viewModel.FechaAgenda,
-                    comentarios = viewModel.Comentarios,
                     estado = "Pendiente"
                 };
 
@@ -230,6 +229,7 @@ namespace Web.Controllers
                     cliente_id = clienteId,
                     vehiculo_id = viewModel.VehiculoId,
                     taller_id = 1,
+                    administrativo_id = 2, // administrativo hardcodeado, no puede ser NULL, ver que hacer
                     agenda = nuevaAgenda,
                     estado = "Solicitud pendiente"
                 };
