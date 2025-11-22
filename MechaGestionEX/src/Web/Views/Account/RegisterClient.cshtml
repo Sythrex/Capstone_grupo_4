@@ -12,10 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        html, body {
-            height: 100%;
-        }
-
+        html, body { height: 100%; }
         body {
             display: flex;
             align-items: center;
@@ -24,7 +21,6 @@
             padding-bottom: 40px;
             background-color: var(--bs-body-bg);
         }
-
         .form-register {
             max-width: 720px;
             width: 100%;
@@ -41,13 +37,12 @@
                     <p class="text-secondary mb-0">Completa tus datos para registrarte</p>
                 </div>
 
-                <form asp-controller="Account" asp-action="RegisterClient" method="post" class="pt-3">
+                <form asp-controller="Account" asp-action="RegisterClient" method="post" class="pt-3" id="formRegistroCliente">
                     @Html.AntiForgeryToken()
 
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <div class="row g-3">
-                        <!-- Cuenta -->
                         <div class="col-12">
                             <h5 class="mb-2">Datos de la cuenta</h5>
                         </div>
@@ -84,17 +79,17 @@
                             <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                         </div>
 
-                        <!-- Cliente -->
                         <div class="col-12">
                             <h5 class="mt-3 mb-2">Datos del cliente</h5>
                         </div>
 
                         <div class="col-md-6">
-                            <div class="form-floating">
-                                <input asp-for="Rut" class="form-control" placeholder="12.345.678-9" />
+                            <div class="form-floating position-relative">
+                                <input asp-for="Rut" class="form-control" placeholder="12.345.678-9" id="Rut" autocomplete="off" />
                                 <label asp-for="Rut"></label>
                             </div>
-                            <span asp-validation-for="Rut" class="text-danger small"></span>
+                            <span asp-validation-for="Rut" class="text-danger small" id="rutValidationSpan"></span>
+                            <div class="small mt-1" id="rutEstado" aria-live="polite"></div>
                         </div>
 
                         <div class="col-md-6">
@@ -142,11 +137,10 @@
                             </select>
                             <span asp-validation-for="ComunaId" class="text-danger small"></span>
                         </div>
-
                     </div>
 
                     <div class="d-grid d-md-flex gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg rounded-3">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-3" id="btnSubmit">
                             Crear cuenta
                         </button>
                         <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary btn-lg rounded-3">
@@ -154,34 +148,32 @@
                         </a>
                     </div>
                 </form>
-
-                @* Si usas validación cliente unobtrusive, puedes incluir tu partial:
-               @await Html.PartialAsync("_ValidationScriptsPartial")
-               (Lo dejamos para cuando confirmes si usas ese partial) *@
             </div>
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', () => {
             const regionSelect = document.getElementById('regionSelect');
-            const comunaSelect  = document.getElementById('comunaSelect');
+            const comunaSelect = document.getElementById('comunaSelect');
+            const rutInput = document.getElementById('Rut');
+            const rutEstado = document.getElementById('rutEstado');
+            const rutSpan = document.getElementById('rutValidationSpan');
+            const submitBtn = document.getElementById('btnSubmit');
+            let debounceTimer = null;
+            let lastQuery = '';
+            let abortController = null;
 
             regionSelect.addEventListener('change', async function () {
                 const regionId = this.value;
-
-                // Limpiar comunas
                 comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
                 comunaSelect.disabled = true;
-
                 if (!regionId) return;
-
                 try {
                     const resp = await fetch(`/Account/ComunasPorRegion/${regionId}`);
                     if (!resp.ok) throw new Error('Error al cargar comunas');
                     const data = await resp.json();
-
                     for (const c of data) {
                         const opt = document.createElement('option');
                         opt.value = c.id;
@@ -194,8 +186,125 @@
                     comunaSelect.disabled = true;
                 }
             });
+
+            function limpiarRut(v) {
+                return v.replace(/[^0-9kK]/g, '').toUpperCase();
+            }
+            function formatearRut(v) {
+                if (v.length < 2) return v;
+                const dv = v.slice(-1);
+                let cuerpo = v.slice(0, -1);
+                let salida = '';
+                while (cuerpo.length > 3) {
+                    salida = '.' + cuerpo.slice(-3) + salida;
+                    cuerpo = cuerpo.slice(0, -3);
+                }
+                salida = cuerpo + salida;
+                return salida + '-' + dv;
+            }
+            function calcularDv(cuerpo) {
+                let suma = 0;
+                let mult = 2;
+                for (let i = cuerpo.length - 1; i >= 0; i--) {
+                    suma += parseInt(cuerpo[i]) * mult;
+                    mult = mult === 7 ? 2 : mult + 1;
+                }
+                const resto = 11 - (suma % 11);
+                if (resto === 11) return '0';
+                if (resto === 10) return 'K';
+                return resto.toString();
+            }
+            function validarLocal(rutFormateado) {
+                const regex = /^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/;
+                if (!regex.test(rutFormateado)) return { formatoOk: false, dvOk: false };
+                const limpio = rutFormateado.replace(/\./g, '').toUpperCase();
+                const [cuerpo, dv] = limpio.split('-');
+                const dvCalc = calcularDv(cuerpo);
+                return { formatoOk: true, dvOk: dv === dvCalc };
+            }
+            function setEstado(clase, mensaje) {
+                rutEstado.className = 'small ' + (clase ? clase : '');
+                rutEstado.textContent = mensaje;
+            }
+            function marcarValidez(ok) {
+                rutInput.classList.remove('is-valid', 'is-invalid');
+                rutInput.classList.add(ok ? 'is-valid' : 'is-invalid');
+            }
+
+            async function consultarServidor(rutFormateado) {
+                if (abortController) abortController.abort();
+                abortController = new AbortController();
+                try {
+                    const url = `/Account/ValidarRutCliente?rut=${encodeURIComponent(rutFormateado)}`;
+                    const resp = await fetch(url, { signal: abortController.signal });
+                    if (!resp.ok) throw new Error('Error consulta servidor');
+                    return await resp.json();
+                } catch (e) {
+                    if (e.name === 'AbortError') return null;
+                    console.error(e);
+                    return { validFormato: false, dvCorrecto: false, disponible: false, mensaje: 'Error de red.' };
+                }
+            }
+
+            rutInput.addEventListener('input', () => {
+                const limpio = limpiarRut(rutInput.value);
+                const formateado = formatearRut(limpio);
+                rutInput.value = formateado;
+
+                const local = validarLocal(formateado);
+
+                // Reset mensajes
+                rutSpan.textContent = '';
+                submitBtn.disabled = true;
+
+                if (!local.formatoOk) {
+                    marcarValidez(false);
+                    setEstado('text-danger', 'Formato inválido.');
+                    return;
+                }
+                if (!local.dvOk) {
+                    marcarValidez(false);
+                    setEstado('text-danger', 'Dígito verificador incorrecto.');
+                    return;
+                }
+
+                // Localmente válido -> mostrar chequeo de disponibilidad
+                setEstado('text-secondary', 'Verificando disponibilidad...');
+                marcarValidez(true);
+
+                if (formateado === lastQuery) {
+                    return;
+                }
+                lastQuery = formateado;
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(async () => {
+                    const resultado = await consultarServidor(formateado);
+                    if (!resultado) return; // abortado
+                    if (!resultado.validFormato) {
+                        marcarValidez(false);
+                        setEstado('text-danger', resultado.mensaje || 'Formato inválido.');
+                        submitBtn.disabled = true;
+                        return;
+                    }
+                    if (!resultado.dvCorrecto) {
+                        marcarValidez(false);
+                        setEstado('text-danger', resultado.mensaje || 'Dígito verificador incorrecto.');
+                        submitBtn.disabled = true;
+                        return;
+                    }
+                    if (!resultado.disponible) {
+                        marcarValidez(false);
+                        setEstado('text-warning', 'RUT ya registrado.');
+                        submitBtn.disabled = true;
+                        return;
+                    }
+                    marcarValidez(true);
+                    setEstado('text-success', 'RUT disponible.');
+                    submitBtn.disabled = false;
+                }, 400);
+            });
         });
     </script>
-
 </body>
 </html>

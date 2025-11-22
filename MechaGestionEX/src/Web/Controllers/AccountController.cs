@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Web.Models;
 
@@ -59,10 +60,10 @@ namespace web.Controllers
             }
 
             var claims = new List<Claim>
-{
-    new Claim(ClaimTypes.Name, user.nombre_usuario ?? ""),
-    new Claim(ClaimTypes.NameIdentifier, user.id.ToString())
-};
+            {
+                new Claim(ClaimTypes.Name, user.nombre_usuario ?? ""),
+                new Claim(ClaimTypes.NameIdentifier, user.id.ToString())
+            };
 
             if (user.cliente_id.HasValue)
             {
@@ -175,7 +176,6 @@ namespace web.Controllers
                 return View(vm);
             }
 
-            // Validar usuario único
             var existeUsuario = await _context.usuario.AnyAsync(u => u.nombre_usuario == vm.NombreUsuario);
             if (existeUsuario)
             {
@@ -187,7 +187,7 @@ namespace web.Controllers
 
             var nuevoFuncionario = new funcionario
             {
-                rut = vm.Rut,
+                rut = LimpiarRut(vm.Rut),
                 nombre = vm.Nombre,
                 especialidad = vm.Especialidad,
                 activo = true,
@@ -239,7 +239,6 @@ namespace web.Controllers
             );
         }
 
-        // Helper SHA-256 
         private static string ComputeSha256(string input)
         {
             using var sha = SHA256.Create();
@@ -281,5 +280,178 @@ namespace web.Controllers
             return Json(new { id = taller?.id ?? 0, text = taller?.razon_social ?? "Ninguno" });
         }
 
+        // ====== NUEVO ENDPOINT VALIDACIÓN RUT CLIENTE ======
+        [HttpGet("Account/ValidarRutCliente")]
+        public async Task<IActionResult> ValidarRutCliente(string rut)
+        {
+            if (string.IsNullOrWhiteSpace(rut))
+                return Json(new { validFormato = false, dvCorrecto = false, disponible = false, mensaje = "RUT vacío." });
+
+            rut = rut.Trim();
+            var limpio = LimpiarRut(rut);
+            var formateado = FormatearRut(limpio);
+
+            bool formatoOk = Regex.IsMatch(formateado, @"^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$");
+            var partes = limpio.Split('-');
+            bool dvOk = partes.Length == 2 && CalcularDv(partes[0]) == partes[1].ToUpper();
+            bool existe = await _context.cliente.AnyAsync(c => c.rut == limpio);
+            bool disponible = !existe;
+
+            string mensaje = "";
+            if (!formatoOk) mensaje = "Formato inválido.";
+            else if (!dvOk) mensaje = "Dígito verificador incorrecto.";
+            else if (!disponible) mensaje = "RUT ya registrado.";
+
+            return Json(new
+            {
+                validFormato = formatoOk,
+                dvCorrecto = dvOk,
+                disponible,
+                mensaje,
+                rutFormateado = formateado
+            });
+        }
+
+        // ========= REGISTRO CLIENTE =========
+        [HttpGet]
+        public async Task<IActionResult> RegisterClient()
+        {
+            // Cargar regiones para el select
+            ViewBag.Regions = await _context.region
+                .OrderBy(r => r.nombre)
+                .Select(r => new { r.id, r.nombre })
+                .ToListAsync();
+
+            return View(new RegisterClientViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterClient(RegisterClientViewModel vm, int? RegionId)
+        {
+            // Re-cargar regiones por si hay error
+            ViewBag.Regions = await _context.region
+                .OrderBy(r => r.nombre)
+                .Select(r => new { r.id, r.nombre })
+                .ToListAsync();
+
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            // Validar usuario único
+            var existeUsuario = await _context.usuario.AnyAsync(u => u.nombre_usuario == vm.NombreUsuario);
+            if (existeUsuario)
+            {
+                ModelState.AddModelError(nameof(vm.NombreUsuario), "El nombre de usuario ya existe.");
+                return View(vm);
+            }
+
+            // Validar RUT único
+            var rutLimpio = LimpiarRut(vm.Rut);
+            var existeRut = await _context.cliente.AnyAsync(c => c.rut == rutLimpio);
+            if (existeRut)
+            {
+                ModelState.AddModelError(nameof(vm.Rut), "El RUT ya está registrado.");
+                return View(vm);
+            }
+
+            // Crear cliente
+            var nuevoCliente = new cliente
+            {
+                rut = rutLimpio,
+                nombre = vm.Nombre,
+                correo = vm.Correo,
+                telefono = vm.Telefono,
+                direccion = vm.Direccion,
+                comuna_id = vm.ComunaId
+            };
+            _context.cliente.Add(nuevoCliente);
+            await _context.SaveChangesAsync();
+
+            // Crear usuario
+            var nuevoUsuario = new usuario
+            {
+                nombre_usuario = vm.NombreUsuario,
+                password_hash = ComputeSha256(vm.Password),
+                cliente_id = nuevoCliente.id
+            };
+            _context.usuario.Add(nuevoUsuario);
+            await _context.SaveChangesAsync();
+
+            // Autologin
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, nuevoUsuario.nombre_usuario ?? ""),
+                new Claim(ClaimTypes.NameIdentifier, nuevoUsuario.id.ToString()),
+                new Claim(ClaimTypes.Role, "Cliente"),
+                new Claim("ClienteId", nuevoCliente.id.ToString())
+            };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity),
+                new AuthenticationProperties { IsPersistent = true });
+
+            return RedirectToAction("Panel", "Cliente");
+        }
+
+        // Comunas por región usado por el JS del formulario
+        [HttpGet]
+        public async Task<IActionResult> ComunasPorRegion(int regionId)
+        {
+            var comunas = await _context.comuna
+                .Where(c => c.region_id == regionId)
+                .OrderBy(c => c.nombre)
+                .Select(c => new { c.id, c.nombre })
+                .ToListAsync();
+
+            return Json(comunas);
+        }
+
+        // Helpers RUT
+        private static string LimpiarRut(string rut)
+        {
+            rut = rut.ToUpper().Replace(".", "").Replace("-", "");
+            if (rut.Length < 2) return rut;
+            var cuerpo = rut[..^1];
+            var dv = rut[^1].ToString();
+            return cuerpo + "-" + dv;
+        }
+
+        private static string FormatearRut(string rutLimpioConGuion)
+        {
+            var partes = rutLimpioConGuion.Split('-');
+            if (partes.Length != 2) return rutLimpioConGuion;
+            var cuerpo = partes[0];
+            var dv = partes[1];
+            var rev = "";
+            int contador = 0;
+            for (int i = cuerpo.Length - 1; i >= 0; i--)
+            {
+                rev = cuerpo[i] + rev;
+                contador++;
+                if (contador == 3 && i != 0)
+                {
+                    rev = "." + rev;
+                    contador = 0;
+                }
+            }
+            return rev + "-" + dv;
+        }
+
+        private static string CalcularDv(string cuerpo)
+        {
+            int suma = 0;
+            int multiplicador = 2;
+            for (int i = cuerpo.Length - 1; i >= 0; i--)
+            {
+                suma += (cuerpo[i] - '0') * multiplicador;
+                multiplicador = multiplicador == 7 ? 2 : multiplicador + 1;
+            }
+            int resto = 11 - (suma % 11);
+            if (resto == 11) return "0";
+            if (resto == 10) return "K";
+            return resto.ToString();
+        }
     }
 }

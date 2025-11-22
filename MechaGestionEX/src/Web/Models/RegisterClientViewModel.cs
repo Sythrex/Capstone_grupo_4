@@ -30,7 +30,8 @@ namespace Web.Models
 
         [Display(Name = "RUT")]
         [Required(ErrorMessage = "El RUT es obligatorio.")]
-        [MaxLength(10, ErrorMessage = "Máximo 10 caracteres.")]
+        [MaxLength(13, ErrorMessage = "Máximo 13 caracteres.")]
+        [RegularExpression(@"^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$", ErrorMessage = "Formato de RUT inválido.")]
         public string Rut { get; set; } = "";
 
         [Display(Name = "Nombre y Apellido")]
