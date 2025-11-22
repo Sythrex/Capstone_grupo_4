@@ -9,8 +9,6 @@ namespace Web.Models
         [Display(Name = "Fecha y Hora")]
         public DateTime FechaAgenda { get; set; }
 
-        [Display(Name = "Comentarios")]
-        public string? Comentarios { get; set; }
 
         [Required(ErrorMessage = "Las observaciones son requeridas.")]
         [Display(Name = "Observaciones")]

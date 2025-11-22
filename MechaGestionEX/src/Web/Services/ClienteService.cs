@@ -115,7 +115,6 @@ namespace Web.Services
             {
                 titulo = "Solicitud de Cliente",
                 fecha_agenda = model.FechaAgenda,
-                comentarios = model.Comentarios,
                 estado = "Pendiente"
             };
 

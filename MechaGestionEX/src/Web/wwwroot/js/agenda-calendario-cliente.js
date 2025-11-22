@@ -23,6 +23,7 @@
             slotMaxTime: '17:00:00',
             slotDuration: '01:00:00',
             hiddenDays: [0, 6],
+            allDaySlot: false,
             events: {
                 url: '/Cliente/GetAgendasCliente',
                 failure: function () {

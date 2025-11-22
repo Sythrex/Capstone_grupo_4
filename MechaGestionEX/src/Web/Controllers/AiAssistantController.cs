@@ -306,7 +306,6 @@ namespace Web.Controllers
                                     var agendaModel = new CrearAgendaClienteViewModel
                                     {
                                         FechaAgenda = DateTime.Parse(args.GetValueOrDefault("fechaAgenda")?.ToString() ?? DateTime.Now.ToString("o")),
-                                        Comentarios = args.GetValueOrDefault("comentarios")?.ToString() ?? "",
                                         Observaciones = args.GetValueOrDefault("observaciones")?.ToString() ?? "",
                                         VehiculoId = Convert.ToInt32(args.GetValueOrDefault("vehiculoId") ?? 0)
                                     };

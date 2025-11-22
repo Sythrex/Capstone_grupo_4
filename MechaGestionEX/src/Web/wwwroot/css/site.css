@@ -1,0 +1,253 @@
+﻿body {
+    background-color: #eef4ed;
+    color: #0b2545;
+    font-family: 'Arial', sans-serif;
+    padding: 0;
+}
+
+.container-fluid {
+    padding: 0 !important;
+}
+
+
+.row {
+    --bs-gutter-x: 0;
+}
+
+.border-end {
+    border-right: none !important;
+}
+
+.sidebar-heading {
+    background-color: #0b2545;
+    border-bottom: 2px solid #13315c;
+    color: #eef4ed;
+    padding: 1.5rem !important;
+    text-align: center;
+    font-weight: bold;
+}
+
+    .sidebar-heading h5 {
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0;
+    }
+
+.list-group-item {
+    background-color: #13315c;
+    border-color: #8da9c4;
+    color: #eef4ed;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+    .list-group-item:hover {
+        background-color: #134074;
+        color: #eef4ed;
+    }
+
+.list-group-item-action.active {
+    background-color: #134074;
+    color: #eef4ed;
+}
+
+.navbar {
+    background-color: #0b2545 !important;
+    border-bottom: 1px solid #13315c;
+}
+
+.navbar-brand {
+    color: #eef4ed !important;
+    font-weight: bold;
+}
+
+.navbar-text {
+    color: #eef4ed;
+    font-weight: bold;
+    background-color: rgba(19, 49, 92, 0.2);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.select2-container .select2-selection--single {
+    background-color: #eef4ed;
+    border: 1px solid #13315c;
+    color: #0b2545;
+    height: calc(2.25rem + 2px);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #0b2545;
+    line-height: 2.25rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #0b2545 transparent transparent transparent;
+}
+
+.select2-dropdown {
+    background-color: #eef4ed;
+    border: 1px solid #13315c;
+    color: #0b2545;
+}
+
+.select2-results__option--highlighted {
+    background-color: #134074 !important;
+    color: #eef4ed !important;
+}
+
+main {
+    background-color: #eef4ed;
+    padding: 2rem !important;
+}
+
+h2, h3 {
+    color: #0b2545;
+    text-shadow: 1px 1px 2px rgba(141, 169, 196, 0.5);
+    transition: color 0.3s ease;
+}
+
+h2 {
+    font-size: 1.75rem;
+    border-bottom: 1px solid #134074;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+    h2:hover, h3:hover {
+        color: #134074;
+    }
+
+.btn-primary {
+    background-color: #134074;
+    border-color: #134074;
+    color: #eef4ed;
+}
+
+    .btn-primary:hover {
+        background-color: #13315c;
+        color: #eef4ed;
+    }
+
+.btn-secondary {
+    background-color: #8da9c4;
+    border-color: #8da9c4;
+    color: #0b2545;
+}
+
+    .btn-secondary:hover {
+        background-color: #13315c;
+        color: #eef4ed;
+    }
+
+.form-control {
+    background-color: #eef4ed;
+    border-color: #8da9c4;
+    color: #0b2545;
+}
+
+    .form-control:focus {
+        border-color: #134074;
+        box-shadow: 0 0 0 0.25rem rgba(19, 64, 116, 0.25);
+    }
+
+#calendario {
+    background-color: #eef4ed;
+    border: 1px solid #13315c;
+    border-radius: 8px;
+    color: #0b2545;
+}
+
+.fc-event {
+    background-color: #134074 !important;
+    border-color: #0b2545 !important;
+    color: #eef4ed !important;
+}
+
+.fc-event-title {
+    color: #eef4ed;
+    font-weight: bold;
+}
+
+.fc-event-time {
+    color: #eef4ed;
+    font-weight: bold;
+}
+
+.fc-scrollgrid-sync-inner {
+    background-color: #13315C;
+}
+
+.fc-col-header-cell-cushion {
+    color: #EEF4ED;
+}
+
+footer {
+    background-color: #8da9c4;
+    color: #0b2545;
+    border-top: 1px solid #13315c;
+}
+
+.text-body-secondary {
+    color: #0b2545 !important;
+}
+
+.bi {
+    color: #134074;
+}
+
+@media (max-width: 767.98px) {
+    .row {
+        flex-direction: column;
+    }
+
+    .col-2 {
+        width: 100%;
+        height: auto;
+        border-end: none;
+        border-bottom: 1px solid #13315c;
+    }
+
+    .col-10 {
+        width: 100%;
+    }
+
+    .navbar-collapse {
+        flex-direction: column;
+    }
+
+    #calendario {
+        font-size: 0.85rem;
+    }
+
+    .form-select, .form-control {
+        width: 100%;
+    }
+
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        .d-flex.justify-content-between > * {
+            margin-bottom: 15px;
+        }
+
+    .sidebar-heading {
+        padding: 1rem !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .col-2 {
+        width: 25%;
+    }
+
+    .col-10 {
+        width: 75%;
+    }
+}

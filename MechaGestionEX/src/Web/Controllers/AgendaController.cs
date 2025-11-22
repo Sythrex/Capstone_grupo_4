@@ -82,7 +82,6 @@ namespace Web.Controllers
                 {
                     titulo = viewModel.Titulo,
                     fecha_agenda = viewModel.FechaAgenda,
-                    comentarios = viewModel.Comentarios,
                     estado = "Pendiente"
                 };
 

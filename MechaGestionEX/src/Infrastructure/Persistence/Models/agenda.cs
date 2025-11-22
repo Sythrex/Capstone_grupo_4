@@ -21,9 +21,6 @@ namespace Infrastructure.Persistence.Models
         [StringLength(20)]
         public string? estado { get; set; }
 
-        [StringLength(200)]
-        public string? comentarios { get; set; }
-
         public virtual atencion? atencion { get; set; }
 
     }
