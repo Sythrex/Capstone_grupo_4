@@ -171,8 +171,8 @@
                 comunaSelect.disabled = true;
                 if (!regionId) return;
                 try {
-                    const resp = await fetch(`/Account/ComunasPorRegion/${regionId}`);
-                    if (!resp.ok) throw new Error('Error al cargar comunas');
+        const resp = await fetch(`/Account/ComunasPorRegion?regionId=${encodeURIComponent(regionId)}`);
+                                    if (!resp.ok) throw new Error('Error al cargar comunas');
                     const data = await resp.json();
                     for (const c of data) {
                         const opt = document.createElement('option');
