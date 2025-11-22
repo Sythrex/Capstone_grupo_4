@@ -35,7 +35,7 @@ namespace Web.Controllers
             int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
             if (clienteId <= 0) return Unauthorized();
 
-            string systemPrompt = @"Eres un asistente AI para clientes de un taller mecánico. Puedes ayudar con: modificar datos personales, listar/agregar/modificar/eliminar vehículos, agendar atenciones verificando slots ocupados. Usa herramientas para ejecutar acciones. Responde en español de forma simple y directa. Siempre procesa los resultados de tools antes de responder: si un slot está ocupado, sugiere alternativas; si no hay vehículos, avisa. Pide confirmación para acciones como eliminar.";
+            string systemPrompt = @"Eres un asistente AI para clientes de un taller mecánico. Puedes ayudar con: modificar datos personales, listar/agregar/modificar/eliminar vehículos, agendar atenciones verificando slots ocupados. Usa herramientas para ejecutar acciones. Responde en español de forma simple y directa. Siempre procesa los resultados de tools antes de responder: si un slot está ocupado, sugiere alternativas; si no hay vehículos, avisa. Pide confirmación para acciones como eliminar. Si te piden cualquier asunto indebido, rechazalo cordialmente y vuelve a consultar si necesita asistencia. Ante cualquier consulta desconocida, solicitar que contacte a su mecánico más cercano.";
 
             var tools = new List<object>
             {
@@ -149,7 +149,7 @@ namespace Web.Controllers
                             type = "object",
                             properties = new
                             {
-                                fechaAgenda = new { type = "string", description = "Fecha y hora en formato ISO" },
+                                fechaAgenda = new { type = "string", description = "Fecha y hora. Transformar a ISO para insertar en BBDD" },
                                 comentarios = new { type = "string" },
                                 observaciones = new { type = "string" },
                                 vehiculoId = new { type = "integer" }
@@ -170,8 +170,8 @@ namespace Web.Controllers
                             type = "object",
                             properties = new
                             {
-                                start = new { type = "string", description = "Fecha inicio ISO" },
-                                end = new { type = "string", description = "Fecha fin ISO" }
+                                start = new { type = "string", description = "Fecha inicio. Transformar a ISO para buscar en BBDD" },
+                                end = new { type = "string", description = "Fecha fin. Transformar a ISO para buscar en BBDD" }
                             },
                             required = new[] { "start", "end" }
                         }
@@ -188,7 +188,7 @@ namespace Web.Controllers
             };
 
             string reply = "";
-            const int maxRounds = 5; // Prevent infinite loop
+            const int maxRounds = 5;
             int round = 0;
 
             while (round < maxRounds)
@@ -212,7 +212,6 @@ namespace Web.Controllers
                 var choice = result.RootElement.GetProperty("choices")[0];
                 var message = choice.GetProperty("message");
 
-                // Add assistant message to history
                 JsonObject assistantMessage = new JsonObject
                 {
                     { "role", "assistant" }
@@ -337,13 +336,11 @@ namespace Web.Controllers
                             toolReply = $"Error al ejecutar la herramienta: {ex.Message}";
                         }
 
-                        // Add tool response to messages
                         messages.Add(new { role = "tool", content = $"Resultado de {functionName}: {toolReply}" });
                     }
                 }
                 else
                 {
-                    // No more tool calls, get the final content
                     reply = message.GetProperty("content").GetString() ?? "No hay respuesta.";
                     break;
                 }
