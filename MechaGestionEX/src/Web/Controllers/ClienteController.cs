@@ -136,16 +136,25 @@ namespace Web.Controllers
 
 
         [HttpGet("Agenda")]
-        public IActionResult Agenda()
+        public async Task<IActionResult> Agenda()
         {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            var tieneTalleres = await _db.taller_cliente.AnyAsync(tc => tc.cliente_id == clienteId);
+            ViewBag.TieneTalleres = tieneTalleres;
             return View();
         }
 
         [HttpGet("GetAgendasCliente")]
-        public IActionResult GetAgendasCliente(DateTime start, DateTime end)
+        public async Task<IActionResult> GetAgendasCliente(DateTime start, DateTime end, int? tallerId = null)
         {
-            var eventos = _db.agenda
-                .Where(a => a.fecha_agenda >= start && a.fecha_agenda <= end)
+            if (!tallerId.HasValue || tallerId == 0)
+            {
+                return Json(new List<object>());
+            }
+
+            var eventos = await _db.agenda
+                .Include(a => a.atencion)
+                .Where(a => a.fecha_agenda >= start && a.fecha_agenda <= end && a.atencion != null && a.atencion.taller_id == tallerId)
                 .Select(e => new
                 {
                     id = e.id,
@@ -153,16 +162,15 @@ namespace Web.Controllers
                     start = e.fecha_agenda.ToString("o"),
                     end = e.fecha_agenda.AddHours(1).ToString("o"),
                 })
-                .ToList();
+                .ToListAsync();
 
             return Json(eventos);
         }
 
         [HttpGet("CreateAgenda")]
-        public async Task<IActionResult> CreateAgenda(string? fecha = null)
+        public async Task<IActionResult> CreateAgenda(string? fecha = null, int? tallerId = null)
         {
             int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
-
             if (clienteId <= 0)
             {
                 return Unauthorized();
@@ -177,16 +185,34 @@ namespace Web.Controllers
                 })
                 .ToListAsync();
 
+            var talleres = await _db.taller_cliente
+                .Where(tc => tc.cliente_id == clienteId)
+                .Select(tc => new SelectListItem
+                {
+                    Value = tc.taller_id.ToString(),
+                    Text = tc.taller.razon_social
+                })
+                .ToListAsync();
+
             var viewModel = new CrearAgendaClienteViewModel
             {
                 VehiculosDisponibles = new SelectList(vehiculos, "Value", "Text"),
-                FechaAgenda = DateTime.Today.AddHours(9)
+                TalleresDisponibles = new SelectList(talleres, "Value", "Text"),
+                FechaAgenda = DateTime.Today.AddHours(9),
+                TallerId = tallerId ?? HttpContext.Session.GetInt32("TallerClienteId") ?? 0
             };
 
             if (!string.IsNullOrEmpty(fecha) && DateTime.TryParse(fecha, out DateTime parsedFecha))
             {
                 viewModel.FechaAgenda = parsedFecha;
             }
+
+            if (tallerId.HasValue && tallerId.Value != 0 && !await _db.taller_cliente.AnyAsync(tc => tc.cliente_id == clienteId && tc.taller_id == tallerId.Value))
+            {
+                viewModel.TallerId = 0; // Reset si no válido
+            }
+
+            viewModel.TalleresDisponibles = new SelectList(talleres, "Value", "Text", viewModel.TallerId.ToString());
 
             return View(viewModel);
         }
@@ -196,8 +222,6 @@ namespace Web.Controllers
         public async Task<IActionResult> CreateAgenda(CrearAgendaClienteViewModel viewModel)
         {
             int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
-            int usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-
             if (clienteId <= 0)
             {
                 return Unauthorized();
@@ -212,10 +236,27 @@ namespace Web.Controllers
                 })
                 .ToListAsync();
 
+            var talleres = await _db.taller_cliente
+                .Where(tc => tc.cliente_id == clienteId)
+                .Select(tc => new SelectListItem
+                {
+                    Value = tc.taller_id.ToString(),
+                    Text = tc.taller.razon_social
+                })
+                .ToListAsync();
+
             viewModel.VehiculosDisponibles = new SelectList(vehiculos, "Value", "Text", viewModel.VehiculoId);
+            viewModel.TalleresDisponibles = new SelectList(talleres, "Value", "Text", viewModel.TallerId);
 
             if (ModelState.IsValid)
             {
+                var tallerAsignado = await _db.taller_cliente.AnyAsync(tc => tc.cliente_id == clienteId && tc.taller_id == viewModel.TallerId);
+                if (!tallerAsignado)
+                {
+                    ModelState.AddModelError("TallerId", "Taller no asignado.");
+                    return View(viewModel);
+                }
+
                 var nuevaAgenda = new agenda
                 {
                     titulo = "Solicitud de Cliente",
@@ -228,8 +269,8 @@ namespace Web.Controllers
                     observaciones = viewModel.Observaciones,
                     cliente_id = clienteId,
                     vehiculo_id = viewModel.VehiculoId,
-                    taller_id = 1,
-                    administrativo_id = 2, // administrativo hardcodeado, no puede ser NULL, ver que hacer
+                    taller_id = viewModel.TallerId,
+                    administrativo_id = 2, // Mantener hardcode por ahora
                     agenda = nuevaAgenda,
                     estado = "Solicitud pendiente"
                 };
@@ -244,9 +285,11 @@ namespace Web.Controllers
                     created_at = DateTime.Now,
                     tipo = "Cliente",
                 };
-
                 _db.bitacora.Add(nuevaBitacora);
                 await _db.SaveChangesAsync();
+
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                Console.WriteLine(string.Join(", ", errors));
 
                 return RedirectToAction("Agenda");
             }
@@ -506,5 +549,68 @@ namespace Web.Controllers
             return RedirectToAction("Vehiculos");
         }
 
+        [HttpGet("GetTalleresCliente")]
+        public async Task<IActionResult> GetTalleresCliente(string? search = null)
+        {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            var query = _db.taller_cliente
+                .Where(tc => tc.cliente_id == clienteId)
+                .Include(tc => tc.taller)
+                .Select(tc => tc.taller);
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(t => t.razon_social.Contains(search, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var talleres = await query
+                .Select(t => new { id = t.id, text = t.razon_social })
+                .ToListAsync();
+
+            return Json(new { results = talleres });
+        }
+
+        [HttpGet("GetTallerClienteActivo")]
+        public async Task<IActionResult> GetTallerClienteActivo()
+        {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            var tallerId = HttpContext.Session.GetInt32("TallerClienteId");
+
+            if (tallerId.HasValue)
+            {
+                var taller = await _db.taller.FindAsync(tallerId.Value);
+                if (taller != null && await _db.taller_cliente.AnyAsync(tc => tc.cliente_id == clienteId && tc.taller_id == tallerId))
+                {
+                    return Json(new { id = taller.id, text = taller.razon_social });
+                }
+            }
+
+            var primero = await _db.taller_cliente
+                .Where(tc => tc.cliente_id == clienteId)
+                .Select(tc => tc.taller)
+                .FirstOrDefaultAsync();
+
+            if (primero != null)
+            {
+                HttpContext.Session.SetInt32("TallerClienteId", primero.id);
+                return Json(new { id = primero.id, text = primero.razon_social });
+            }
+
+            return Json(new { id = 0, text = "Ninguno" });
+        }
+
+        [HttpPost("ChangeTallerCliente")]
+        public async Task<IActionResult> ChangeTallerCliente(int tallerId)
+        {
+            int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
+            var existe = await _db.taller_cliente.AnyAsync(tc => tc.cliente_id == clienteId && tc.taller_id == tallerId);
+            if (!existe)
+            {
+                return Json(new { success = false, message = "Taller no asignado." });
+            }
+
+            HttpContext.Session.SetInt32("TallerClienteId", tallerId);
+            return Json(new { success = true });
+        }
     }
 }

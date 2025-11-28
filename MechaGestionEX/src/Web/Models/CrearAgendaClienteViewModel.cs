@@ -14,8 +14,16 @@ namespace Web.Models
         [Display(Name = "Observaciones")]
         public string Observaciones { get; set; } = string.Empty;
 
-        [Display(Name = "Vehículo (opcional)")]
+        [Required(ErrorMessage = "Debe asignar un vehículo para la atención.")]
+        [Display(Name = "Vehículo")]
         public int? VehiculoId { get; set; }
+
+        [Required(ErrorMessage = "Seleccione un taller")]
+        [Range(1, int.MaxValue, ErrorMessage = "Seleccione un taller válido")]
+        [Display(Name = "Taller")]
+        public int TallerId { get; set; }
+
+        public SelectList? TalleresDisponibles { get; set; }
 
         public SelectList? VehiculosDisponibles { get; set; }
     }

@@ -30,8 +30,18 @@
             <div class="mb-3">
                 <label asp-for="VehiculoId" class="form-label"></label>
                 <select asp-for="VehiculoId" asp-items="@Model.VehiculosDisponibles" class="form-select">
-                    <option value="">-- (Opcional) Seleccione un Vehículo --</option>
+                    <option value="">-- Seleccione un Vehículo --</option>
                 </select>
+                <span asp-validation-for="VehiculoId" class="text-danger"></span>
+            </div>
+
+            <h4>Taller</h4>
+            <div class="mb-3">
+                <label asp-for="TallerId" class="form-label"></label>
+                <select asp-for="TallerId" asp-items="@Model.TalleresDisponibles" class="form-select">
+                    <option value="">-- Seleccione un Taller --</option>
+                </select>
+                <span asp-validation-for="TallerId" class="text-danger"></span>
             </div>
 
             <div class="mb-3">

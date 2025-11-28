@@ -24,15 +24,26 @@
             slotDuration: '01:00:00',
             hiddenDays: [0, 6],
             allDaySlot: false,
-            events: {
-                url: '/Cliente/GetAgendasCliente',
-                failure: function () {
-                    alert('Hubo un error al cargar las citas.');
+            events: function (fetchInfo, successCallback, failureCallback) {
+                var tallerId = $('#tallerSelect').val();
+                if (!tallerId || tallerId == '0') {
+                    successCallback([]);
+                    return;
                 }
+                $.get('/Cliente/GetAgendasCliente?tallerId=' + tallerId + '&start=' + fetchInfo.start.toISOString() + '&end=' + fetchInfo.end.toISOString(), function (data) {
+                    successCallback(data);
+                }).fail(function () {
+                    failureCallback('Error al cargar eventos');
+                });
             },
             selectable: true,
             select: function (info) {
-                var url = '/Cliente/CreateAgenda?fecha=' + encodeURIComponent(info.startStr);
+                var tallerId = $('#tallerSelect').val();
+                if (!tallerId || tallerId == '0') {
+                    alert('Seleccione un taller primero.');
+                    return;
+                }
+                var url = '/Cliente/CreateAgenda?fecha=' + encodeURIComponent(info.startStr) + '&tallerId=' + tallerId;
                 window.location.href = url;
             },
             selectOverlap: false,
@@ -45,5 +56,42 @@
             }
         });
         calendar.render();
+
+        $('#tallerSelect').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Seleccione taller',
+            allowClear: false,
+            ajax: {
+                url: '/Cliente/GetTalleresCliente',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { search: params.term };
+                },
+                processResults: function (data) {
+                    return { results: data.results };
+                }
+            }
+        });
+
+        $.get('/Cliente/GetTallerClienteActivo', function (data) {
+            if (data.id && data.id != 0) {
+                var option = new Option(data.text, data.id, true, true);
+                $('#tallerSelect').append(option).trigger('change');
+                calendar.refetchEvents();
+            }
+        });
+
+        $('#tallerSelect').on('select2:select', function (e) {
+            var tallerId = e.params.data.id;
+            $.post('/Cliente/ChangeTallerCliente', { tallerId: tallerId }, function (response) {
+                if (response.success) {
+                    calendar.refetchEvents();
+                } else {
+                    alert(response.message);
+                }
+            });
+        });
     }
 });
