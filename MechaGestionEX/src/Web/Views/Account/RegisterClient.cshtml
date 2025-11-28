@@ -69,7 +69,11 @@
                                 <label asp-for="Password"></label>
                             </div>
                             <span asp-validation-for="Password" class="text-danger small"></span>
+                            <small id="passwordHelp" class="small text-muted">
+                                La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y un símbolo.
+                            </small>
                         </div>
+
 
                         <div class="col-md-6">
                             <div class="form-floating">
@@ -164,6 +168,93 @@
             let debounceTimer = null;
             let lastQuery = '';
             let abortController = null;
+
+            const form = document.getElementById('formRegistroCliente');
+            const passwordInput = document.getElementById('Password');
+            const confirmInput = document.getElementById('ConfirmPassword');
+            const passwordHelp = document.getElementById('passwordHelp');
+
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+
+            function marcarInput(input, ok) {
+            input.classList.remove('is-valid', 'is-invalid');
+            if (ok === true) {
+                input.classList.add('is-valid');
+            } else if (ok === false) {
+                input.classList.add('is-invalid');
+            }
+        }
+
+        function validarPassword() {
+            const value = passwordInput.value || "";
+
+            if (!value) {
+                marcarInput(passwordInput, null);
+                if (passwordHelp) {
+                    passwordHelp.classList.remove('text-danger');
+                    passwordHelp.classList.add('text-muted');
+                    passwordHelp.textContent = "La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y un símbolo.";
+                }
+                return false;
+            }
+
+            const ok = passwordRegex.test(value);
+            marcarInput(passwordInput, ok);
+
+            if (passwordHelp) {
+                if (ok) {
+                    passwordHelp.classList.remove('text-danger');
+                    passwordHelp.classList.add('text-muted');
+                    passwordHelp.textContent = "Contraseña segura.";
+                } else {
+                    passwordHelp.classList.remove('text-muted');
+                    passwordHelp.classList.add('text-danger');
+                    passwordHelp.textContent = "La contraseña no cumple los requisitos de seguridad.";
+                }
+            }
+
+            return ok;
+        }
+
+        function validarConfirmPassword() {
+            const value = confirmInput.value || "";
+            const passValue = passwordInput.value || "";
+
+            if (!value) {
+                marcarInput(confirmInput, null);
+                return false;
+            }
+
+            const ok = value === passValue;
+            marcarInput(confirmInput, ok);
+            return ok;
+        }
+
+        if (passwordInput && confirmInput) {
+            passwordInput.addEventListener('input', () => {
+                validarPassword();
+                validarConfirmPassword(); // Por si ya escribió la confirmación
+            });
+
+            confirmInput.addEventListener('input', () => {
+                validarConfirmPassword();
+            });
+
+            form.addEventListener('submit', (e) => {
+                const passOk = validarPassword();
+                const confirmOk = validarConfirmPassword();
+
+                // Si algo no cumple, cancelamos el submit
+                if (!passOk || !confirmOk) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        }
+
+
+
 
             regionSelect.addEventListener('change', async function () {
                 const regionId = this.value;

@@ -1,0 +1,35 @@
+﻿@model ErrorViewModel
+@{
+    Layout = "_LayoutError";
+    ViewData["Title"] = "Página no encontrada";
+
+    // URL calculada en el controlador según claims
+    var urlInicio = ViewBag.UrlInicio as string ?? Url.Action("Index", "Home");
+}
+
+
+
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 fw-bold">Ups...</h1>
+        <h2 class="mb-3">Ha ocurrido un error interno en el servidor.</h2>
+
+        @if (Model.ShowRequestId)
+        {
+            <p class="text-muted">
+                <strong>ID de seguimiento:</strong> <code>@Model.RequestId</code>
+            </p>
+        }
+
+        <p class="lead mb-4">
+            Si el problema persiste, contacta al administrador del sistema.
+        </p>
+
+        <a href="@urlInicio" class="btn btn-primary btn-lg">
+            Volver al inicio
+        </a>
+
+
+    </div>
+</div>
+

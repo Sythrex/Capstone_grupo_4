@@ -45,8 +45,15 @@ var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
+    
+}
+else
+{
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+    app.UseStatusCodePagesWithReExecute("/Home/ErrorStatusCode", "?code={0}");
+
 }
 
 app.UseHttpsRedirection();

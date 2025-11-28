@@ -1,0 +1,27 @@
+﻿@{
+    Layout = "_LayoutError";
+    ViewData["Title"] = "Página no encontrada";
+    var urlInicio = ViewBag.UrlInicio as string ?? Url.Action("Index", "Home");
+    var code = ViewBag.StatusCode as int? ?? 0;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            @if (code != 0)
+            {
+                <h1 class="display-4 fw-bold">@code</h1>
+            }
+            <h2 class="mb-3">Ha ocurrido un error al procesar tu solicitud</h2>
+            <p class="lead mb-4">
+                Intenta nuevamente más tarde o vuelve al inicio del sitio.
+            </p>
+
+            <a href="@urlInicio" class="btn btn-primary btn-lg">
+                Volver al inicio
+            </a>
+
+
+        </div>
+    </div>
+</div>

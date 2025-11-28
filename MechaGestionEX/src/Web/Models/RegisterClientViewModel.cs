@@ -19,7 +19,11 @@ namespace Web.Models
         [Display(Name = "Contraseña")]
         [Required(ErrorMessage = "La contraseña es obligatoria.")]
         [DataType(DataType.Password)]
-        [MinLength(6, ErrorMessage = "Debe tener al menos 6 caracteres.")]
+        [MinLength(8, ErrorMessage = "Debe tener al menos 8 caracteres.")]
+        [RegularExpression(
+            @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$",
+            ErrorMessage = "La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y un símbolo."
+        )]
         public string Password { get; set; } = "";
 
         [Display(Name = "Confirmar contraseña")]
