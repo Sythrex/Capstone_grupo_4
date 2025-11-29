@@ -27,11 +27,18 @@ namespace web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl = null)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(string returnUrl = null)
         {
+            if (User?.Identity != null && User.Identity.IsAuthenticated)
+            {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
