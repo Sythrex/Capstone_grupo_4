@@ -1,4 +1,7 @@
 ﻿$(document).ready(function () {
+
+    $('#tipo').select2();
+
     $('#tipo_servicio_id').select2({
         placeholder: 'Seleccione un tipo de servicio',
         allowClear: true,

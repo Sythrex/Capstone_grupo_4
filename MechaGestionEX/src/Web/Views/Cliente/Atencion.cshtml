@@ -127,9 +127,12 @@
                 @foreach (var bit in bitacoras)
                 {
                     <li class="list-group-item">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between align-items-start">
                             <span>@bit.descripcion</span>
-                            <small class="text-muted">@bit.created_at.ToString("dd/MM/yyyy HH:mm")</small>
+                            <div class="text-end">
+                                <small class="text-muted d-block">@bit.tipo</small>
+                                <small class="text-muted">@bit.created_at.ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
                         </div>
                     </li>
                 }
@@ -144,7 +147,7 @@
             @Html.AntiForgeryToken()
             <div class="mb-3">
                 <label for="comentario" class="form-label">Agregar Comentario</label>
-                <textarea id="comentario" name="comentario" class="form-control" rows="3" required></textarea>
+                <textarea id="comentario" name="comentario" class="form-control" rows="3" maxlength="1000" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-2"></i>Enviar Comentario

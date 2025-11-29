@@ -42,7 +42,44 @@ namespace Web.Controllers
             {
                 return NotFound();
             }
+
+            var bitacoras = await _context.bitacora
+                .Where(b => b.atencion_id == atencion.id)
+                .OrderByDescending(b => b.created_at)
+                .ToListAsync();
+
+            ViewBag.Bitacoras = bitacoras;
+
             return View(atencion);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AgregarBitacora(int id, string descripcion, string tipo)
+        {
+            if (string.IsNullOrWhiteSpace(descripcion))
+            {
+                return BadRequest("Descripción requerida.");
+            }
+
+            var atencion = await _context.atencion.FindAsync(id);
+            if (atencion == null)
+            {
+                return NotFound();
+            }
+
+            var nuevaBitacora = new bitacora
+            {
+                atencion_id = id,
+                descripcion = descripcion,
+                created_at = DateTime.Now,
+                tipo = tipo
+            };
+
+            _context.bitacora.Add(nuevaBitacora);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Detalle", new { id = atencion.agenda_id });
         }
 
         public async Task<IActionResult> Editar_Atencion(int id)
