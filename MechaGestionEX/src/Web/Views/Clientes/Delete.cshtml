@@ -11,19 +11,21 @@
         <p>¿Seguro que deseas eliminar este registro?</p>
 
         <dl class="row">
-            <dt class="col-sm-3">id</dt>
-            <dd class="col-sm-9">@Model.id</dd>
-            <dt class="col-sm-3">rut</dt>
-            <dd class="col-sm-9">@Model.rut</dd>
-            <dt class="col-sm-3">nombre</dt>
-            <dd class="col-sm-9">@Model.nombre</dd>
-            <dt class="col-sm-3">correo</dt>
-            <dd class="col-sm-9">@Model.correo</dd>
+            <dt class="col-sm-3 mb-2">id</dt>
+            <dd class="col-sm-9 mb-2">@Model.id</dd>
+            <dt class="col-sm-3 mb-2">rut</dt>
+            <dd class="col-sm-9 mb-2">@Model.rut</dd>
+            <dt class="col-sm-3 mb-2">nombre</dt>
+            <dd class="col-sm-9 mb-2">@Model.nombre</dd>
+            <dt class="col-sm-3 mb-2">correo</dt>
+            <dd class="col-sm-9 mb-2">@Model.correo</dd>
         </dl>
 
         <form asp-action="Delete" asp-route-id="@Model.id" method="post">
-            <button class="btn btn-danger" type="submit">Eliminar</button>
-            <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+            <div class="d-flex justify-content-between flex-wrap">
+                <button class="btn btn-danger me-2 mb-2" type="submit">Eliminar</button>
+                <a class="btn btn-secondary mb-2" asp-action="Index">Cancelar</a>
+            </div>
         </form>
     </div>
 </div>

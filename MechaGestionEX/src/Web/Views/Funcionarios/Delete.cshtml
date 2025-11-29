@@ -11,23 +11,25 @@
         <p>¿Seguro que deseas eliminar este registro? Esto eliminará la asignación al taller actual, pero no afectará otras asignaciones o datos relacionados.</p>
 
         <dl class="row">
-            <dt class="col-sm-3">ID</dt>
-            <dd class="col-sm-9">@Model.id</dd>
-            <dt class="col-sm-3">RUT</dt>
-            <dd class="col-sm-9">@Model.rut</dd>
-            <dt class="col-sm-3">Nombre</dt>
-            <dd class="col-sm-9">@Model.nombre</dd>
-            <dt class="col-sm-3">Especialidad</dt>
-            <dd class="col-sm-9">@Model.especialidad</dd>
-            <dt class="col-sm-3">Activo</dt>
-            <dd class="col-sm-9">@(Model.activo ? "Sí" : "No")</dd>
-            <dt class="col-sm-3">Tipo</dt>
-            <dd class="col-sm-9">@(Model.tipo?.nombre ?? "Sin Tipo")</dd>
+            <dt class="col-sm-3 mb-2">ID</dt>
+            <dd class="col-sm-9 mb-2">@Model.id</dd>
+            <dt class="col-sm-3 mb-2">RUT</dt>
+            <dd class="col-sm-9 mb-2">@Model.rut</dd>
+            <dt class="col-sm-3 mb-2">Nombre</dt>
+            <dd class="col-sm-9 mb-2">@Model.nombre</dd>
+            <dt class="col-sm-3 mb-2">Especialidad</dt>
+            <dd class="col-sm-9 mb-2">@Model.especialidad</dd>
+            <dt class="col-sm-3 mb-2">Activo</dt>
+            <dd class="col-sm-9 mb-2">@(Model.activo ? "Sí" : "No")</dd>
+            <dt class="col-sm-3 mb-2">Tipo</dt>
+            <dd class="col-sm-9 mb-2">@(Model.tipo?.nombre ?? "Sin Tipo")</dd>
         </dl>
 
         <form asp-action="Delete" asp-route-id="@Model.id" method="post">
-            <button class="btn btn-danger" type="submit">Eliminar</button>
-            <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+            <div class="d-flex justify-content-between flex-wrap">
+                <button class="btn btn-danger me-2 mb-2" type="submit">Eliminar</button>
+                <a class="btn btn-secondary mb-2" asp-action="Index">Cancelar</a>
+            </div>
         </form>
     </div>
 </div>

@@ -7,6 +7,7 @@
 
         function initViewTable(dataSource) {
             return $('#inventarioTable').DataTable({
+                responsive: true,
                 ajax: dataSource === 'ajax' ? {
                     url: '/Inventario/GetInventarioData?categoriaId=' + ($('#categoriaSelect').val() || ''),
                     dataSrc: ''
@@ -59,6 +60,7 @@
 
             table.destroy();
             table = $('#inventarioTable').DataTable({
+                responsive: true,
                 data: originalData,
                 columns: [
                     { data: 'sku' },
@@ -70,108 +72,29 @@
                         render: function (data, type, row) {
                             return '<div class="input-group input-group-sm">' +
                                 '<button class="btn btn-outline-secondary decrementDisp" data-id="' + row.repuestoUnidadesId + '">-</button>' +
-                                '<input type="number" class="form-control stockDisp no-spin" value="' + row.stockDisponible + '" min="0" data-original="' + row.stockDisponible + '" data-id="' + row.repuestoUnidadesId + '">' +
+                                '<input type="number" class="form-control text-center stockDispInput" value="' + row.stockDisponible + '" data-id="' + row.repuestoUnidadesId + '">' +
                                 '<button class="btn btn-outline-secondary incrementDisp" data-id="' + row.repuestoUnidadesId + '">+</button>' +
-                                '</div><span class="variacion ms-2"></span>';
-                        }
+                                '</div>';
+                        },
+                        orderable: false
                     },
                     {
                         data: null,
                         render: function (data, type, row) {
                             return '<div class="input-group input-group-sm">' +
                                 '<button class="btn btn-outline-secondary decrementRes" data-id="' + row.repuestoUnidadesId + '">-</button>' +
-                                '<input type="number" class="form-control stockRes no-spin" value="' + row.stockReservado + '" min="0" data-original="' + row.stockReservado + '" data-id="' + row.repuestoUnidadesId + '">' +
+                                '<input type="number" class="form-control text-center stockResInput" value="' + row.stockReservado + '" data-id="' + row.repuestoUnidadesId + '">' +
                                 '<button class="btn btn-outline-secondary incrementRes" data-id="' + row.repuestoUnidadesId + '">+</button>' +
-                                '</div><span class="variacion ms-2"></span>';
-                        }
-                    },
-                    {
-                        data: null,
-                        render: function (data, type, row) {
-                            return '<input type="number" class="form-control form-control-sm precioUnit no-spin" value="' + row.precioUnitario + '" min="0" data-original="' + row.precioUnitario + '" data-id="' + row.repuestoUnidadesId + '">' +
-                                '<span class="variacion ms-2"></span>';
-                        }
-                    },
-                    {
-                        data: null,
-                        render: function (data, type, row) {
-                            return '<a href="/Inventario/Detalles/' + row.repuestoUnidadesId + '" class="btn btn-info btn-sm">Ver</a>';
+                                '</div>';
                         },
                         orderable: false
-                    }
-                ],
-                rowCallback: function (row, data) {
-                    if (data.stockDisponible < 5) {
-                        $(row).addClass('table-danger');
-                    }
-                },
-                pageLength: 10,
-                searching: true,
-                ordering: true,
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/2.1.7/i18n/es-ES.json'
-                }
-            });
-        });
-
-        function updateVariacion(input) {
-            var original = parseInt(input.data('original')) || 0;
-            var current = parseInt(input.val()) || 0;
-            var diff = current - original;
-            var span;
-
-            if (input.hasClass('stockDisp') || input.hasClass('stockRes')) {
-                span = input.closest('.input-group').next('.variacion');
-            } else if (input.hasClass('precioUnit')) {
-                span = input.next('.variacion');
-                if (diff > 0) {
-                    span.text('+' + diff.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })).removeClass('text-danger').addClass('text-success');
-                } else if (diff < 0) {
-                    span.text(diff.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })).removeClass('text-success').addClass('text-danger');
-                } else {
-                    span.text('');
-                }
-                return;
-            }
-
-            if (diff > 0) {
-                span.text('+' + diff).removeClass('text-danger').addClass('text-success');
-            } else if (diff < 0) {
-                span.text(diff).removeClass('text-success').addClass('text-danger');
-            } else {
-                span.text('');
-            }
-        }
-
-        function preventNonNumeric(e) {
-            var key = e.which || e.keyCode;
-            if (!((key >= 48 && key <= 57) || key == 8 || key == 46 || key == 9 || key == 13 || (key >= 37 && key <= 40) || key == 45)) {
-                e.preventDefault();
-            }
-        }
-
-        function resetEditMode() {
-            isEditMode = false;
-            $('#guardarCambios, #cancelarEdicion').hide();
-            $('#editarStockGlobal').show();
-            table.destroy();
-            table = $('#inventarioTable').DataTable({
-                ajax: {
-                    url: '/Inventario/GetInventarioData?categoriaId=' + ($('#categoriaSelect').val() || ''),
-                    dataSrc: ''
-                },
-                columns: [
-                    { data: 'sku' },
-                    { data: 'nombre' },
-                    { data: 'marca' },
-                    { data: 'categoriaNombre' },
-                    { data: 'stockDisponible' },
-                    { data: 'stockReservado' },
+                    },
                     {
                         data: 'precioUnitario',
-                        render: function (data) {
-                            return data.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
-                        }
+                        render: function (data, type, row) {
+                            return '<input type="number" class="form-control form-control-sm precioInput" value="' + data + '" data-id="' + row.repuestoUnidadesId + '">';
+                        },
+                        orderable: false
                     },
                     {
                         data: null,
@@ -193,170 +116,98 @@
                     url: 'https://cdn.datatables.net/plug-ins/2.1.7/i18n/es-ES.json'
                 }
             });
-            cambios = [];
-            originalData = [];
-        }
+        });
 
         $('#cancelarEdicion').click(function () {
-            resetEditMode();
+            isEditMode = false;
+            cambios = [];
+            $('#guardarCambios, #cancelarEdicion').hide();
+            $('#editarStockGlobal').show();
+
+            table.destroy();
+            table = initViewTable('data');
         });
-
-        $(document).on('keypress', '.stockDisp, .stockRes, .precioUnit', preventNonNumeric);
-
-        $(document).on('input', '.stockDisp, .stockRes, .precioUnit', function () {
-            var input = $(this);
-            var val = input.val();
-            if (isNaN(val) || (input.hasClass('precioUnit') && parseFloat(val) < 0)) {
-                alert('Por favor, ingrese solo valores numéricos válidos (positivos para precio).');
-                input.val(input.data('original'));
-            } else {
-                updateVariacion(input);
-            }
-        });
-
-        $(document).on('click', '.incrementDisp, .decrementDisp, .incrementRes, .decrementRes', function () {
-            var isInc = $(this).hasClass('incrementDisp') || $(this).hasClass('incrementRes');
-            var isDisp = $(this).hasClass('incrementDisp') || $(this).hasClass('decrementDisp');
-            var input = $(this).siblings(isDisp ? '.stockDisp' : '.stockRes');
-            var oldVal = parseInt(input.val()) || 0;
-            var newVal = isInc ? oldVal + 1 : oldVal - 1;
-            if (newVal < 0) return;
-            if (!isDisp && isInc) {
-                var currentDisp = parseInt(input.closest('tr').find('.stockDisp').val()) || 0;
-                if (currentDisp === 0) {
-                    alert('No hay stock disponible para aumentar el reservado.');
-                    return;
-                }
-            }
-            input.val(newVal);
-            updateCambios(input);
-            updateVariacion(input);
-        });
-
-        $(document).on('change', '.stockDisp, .stockRes, .precioUnit', function () {
-            var val = parseInt($(this).val()) || 0;
-            if (val < 0) {
-                $(this).val(0);
-                return;
-            }
-            if ($(this).hasClass('stockRes')) {
-                var originalRes = parseInt($(this).data('original')) || 0;
-                var currentDisp = parseInt($(this).closest('tr').find('.stockDisp').val()) || 0;
-                if (val > originalRes && currentDisp === 0) {
-                    alert('No hay stock disponible para aumentar el reservado.');
-                    $(this).val(originalRes);
-                    return;
-                }
-            }
-            updateCambios($(this));
-            updateVariacion($(this));
-        });
-
-        function updateCambios(input) {
-            var id = input.data('id');
-            var cambio = cambios.find(c => c.repuestoUnidadesId === id) || { repuestoUnidadesId: id, variacionDisp: 0, variacionRes: 0, nuevoPrecio: null };
-            var original = parseInt(input.data('original')) || 0;
-            var current = parseInt(input.val()) || 0;
-            if (input.hasClass('stockDisp')) {
-                cambio.variacionDisp = current - original;
-            } else if (input.hasClass('stockRes')) {
-                cambio.variacionRes = current - original;
-            } else if (input.hasClass('precioUnit')) {
-                cambio.nuevoPrecio = current !== original ? current : null;
-            }
-            if (cambio.variacionDisp !== 0 || cambio.variacionRes !== 0 || cambio.nuevoPrecio !== null) {
-                var index = cambios.findIndex(c => c.repuestoUnidadesId === id);
-                if (index > -1) {
-                    cambios[index] = cambio;
-                } else {
-                    cambios.push(cambio);
-                }
-            } else {
-                cambios = cambios.filter(c => c.repuestoUnidadesId !== id);
-            }
-        }
 
         $('#guardarCambios').click(function () {
-            if (cambios.length === 0) {
+            if (cambios.length > 0) {
+                $('#notaBatchModal').modal('show');
+            } else {
                 alert('No hay cambios para guardar.');
-                return;
             }
-            $('#notaBatchModal').modal('show');
         });
 
-        $('#confirmarGuardar').click(function () {
+        $('#confirmarGuardarBatch').click(function () {
             var nota = $('#notaBatch').val();
             var data = { cambios: cambios, nota: nota };
-            $.post('/Inventario/ActualizarStocksBatch', data, function (response) {
+            $.post('/Inventario/ActualizarStockBatch', data, function (response) {
                 if (response.success) {
                     $('#notaBatchModal').modal('hide');
-                    resetEditMode();
+                    location.reload();
                 } else {
                     alert(response.message);
                 }
-            }).fail(function () {
-                alert('Error al guardar.');
             });
         });
 
-        var selectedIds = [];
-
-        $('input[name="tipoAgregar"]').change(function () {
-            var tipo = $(this).val();
-            if (tipo === 'existente') {
-                $('#existenteForm').show();
-                $('#nuevoForm').hide();
-                $('#guardarAgregar').show();
-            } else {
-                $('#existenteForm').hide();
-                $('#nuevoForm').show();
-                $('#guardarAgregar').show();
-            }
+        $(document).on('click', '.incrementDisp, .decrementDisp, .incrementRes, .decrementRes', function () {
+            var id = $(this).data('id');
+            var isDisp = $(this).hasClass('incrementDisp') || $(this).hasClass('decrementDisp');
+            var input = isDisp ? $('.stockDispInput[data-id="' + id + '"]') : $('.stockResInput[data-id="' + id + '"]');
+            var val = parseInt(input.val());
+            var change = $(this).hasClass('incrementDisp') || $(this).hasClass('incrementRes') ? 1 : -1;
+            input.val(val + change);
+            trackChange(id, isDisp ? 'disp' : 'res', val + change);
         });
 
-        $('#agregarRepuestoModal').on('shown.bs.modal', function () {
-            var tipo = $('input[name="tipoAgregar"]:checked').val();
-            if (tipo === 'existente' && !$.fn.DataTable.isDataTable('#repuestosTable')) {
-                $('#repuestosTable').DataTable({
-                    ajax: {
-                        url: '/Inventario/GetRepuestosGlobales',
-                        dataSrc: ''
-                    },
-                    columns: [
-                        { data: 'sku' },
-                        { data: 'nombre' },
-                        { data: 'marca' },
-                        { data: 'categoriaNombre' },
-                        {
-                            data: null,
-                            render: function (data, type, row) {
-                                if (row.asignado) {
-                                    return '<button class="btn btn-secondary btn-sm" disabled>Agregado</button>';
-                                } else if (selectedIds.includes(row.id)) {
-                                    return '<button class="btn btn-danger btn-sm eliminarRepuesto" data-id="' + row.id + '">Eliminar</button>';
-                                } else {
-                                    return '<button class="btn btn-primary btn-sm agregarRepuesto" data-id="' + row.id + '">Agregar</button>';
-                                }
-                            },
-                            orderable: false
+        $(document).on('change', '.stockDispInput, .stockResInput, .precioInput', function () {
+            var id = $(this).data('id');
+            var type = $(this).hasClass('stockDispInput') ? 'disp' : ($(this).hasClass('stockResInput') ? 'res' : 'precio');
+            trackChange(id, type, parseInt($(this).val()));
+        });
+
+        function trackChange(id, type, newVal) {
+            var cambio = cambios.find(c => c.id === id) || { id: id, disp: null, res: null, precio: null };
+            if (type === 'disp') cambio.disp = newVal;
+            if (type === 'res') cambio.res = newVal;
+            if (type === 'precio') cambio.precio = newVal;
+            if (!cambios.find(c => c.id === id)) cambios.push(cambio);
+        }
+
+        $('input[name="tipoAgregar"]').change(function () {
+            if ($(this).val() === 'nuevo') {
+                $('#nuevoRepuestoForm').show();
+                $('#existenteRepuestoForm').hide();
+            } else {
+                $('#nuevoRepuestoForm').hide();
+                $('#existenteRepuestoForm').show();
+                if (!$.fn.DataTable.isDataTable('#repuestosTable')) {
+                    var repuestosTable = $('#repuestosTable').DataTable({
+                        responsive: true,
+                        ajax: {
+                            url: '/Inventario/GetRepuestosNoAsignados',
+                            dataSrc: ''
                         },
-                        {
-                            data: 'asignado',
-                            visible: false
-                        }
-                    ],
-                    pageLength: 10,
-                    searching: true,
-                    ordering: true,
-                    order: [[5, 'asc']],
-                    language: {
-                        url: 'https://cdn.datatables.net/plug-ins/2.1.7/i18n/es-ES.json'
-                    }
-                });
+                        columns: [
+                            { data: 'sku' },
+                            { data: 'nombre' },
+                            { data: 'marca' },
+                            { data: 'categoriaNombre' },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    return row.asignado ? '<button class="btn btn-danger btn-sm eliminarRepuesto" data-id="' + row.id + '">Eliminar</button>' :
+                                        '<button class="btn btn-primary btn-sm agregarRepuesto" data-id="' + row.id + '">Agregar</button>';
+                                }
+                            }
+                        ]
+                    });
+                }
             }
         });
 
         $('#agregarRepuestoModal').on('hidden.bs.modal', function () {
+            $('#nuevoSku, #nuevoNombre, #nuevaMarca').val('');
+            $('#nuevaCategoria').val('');
             if ($.fn.DataTable.isDataTable('#repuestosTable')) {
                 $('#repuestosTable').DataTable().destroy();
                 $('#repuestosTable tbody').empty();

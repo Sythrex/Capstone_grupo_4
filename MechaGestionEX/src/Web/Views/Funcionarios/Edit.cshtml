@@ -11,22 +11,22 @@
         <form asp-action="Edit" method="post" class="row">
             <input type="hidden" asp-for="id" />
 
-            <div class="col-md-4 form-group">
+            <div class="col-sm-12 col-md-4 form-group">
                 <label asp-for="rut" class="control-label"></label>
                 <input asp-for="rut" class="form-control" />
                 <span asp-validation-for="rut" class="text-danger"></span>
             </div>
-            <div class="col-md-6 form-group">
+            <div class="col-sm-12 col-md-6 form-group">
                 <label asp-for="nombre" class="control-label"></label>
                 <input asp-for="nombre" class="form-control" />
                 <span asp-validation-for="nombre" class="text-danger"></span>
             </div>
-            <div class="col-md-6 form-group">
+            <div class="col-sm-12 col-md-6 form-group">
                 <label asp-for="especialidad" class="control-label"></label>
                 <input asp-for="especialidad" class="form-control" />
                 <span asp-validation-for="especialidad" class="text-danger"></span>
             </div>
-            <div class="col-md-4 form-group">
+            <div class="col-sm-12 col-md-4 form-group">
                 <label asp-for="activo" class="control-label">Activo</label>
                 <select asp-for="activo" class="form-control">
                     <option value="true">Sí</option>
@@ -34,7 +34,7 @@
                 </select>
                 <span asp-validation-for="activo" class="text-danger"></span>
             </div>
-            <div class="col-md-4 form-group">
+            <div class="col-sm-12 col-md-4 form-group">
                 <label asp-for="tipo_id" class="control-label">Tipo</label>
                 <select asp-for="tipo_id" id="tipoSelect" class="form-control select2" data-placeholder="Seleccione un tipo">
                     <option value="">Seleccione un tipo</option>
@@ -46,7 +46,7 @@
                 <span asp-validation-for="tipo_id" class="text-danger"></span>
             </div>
 
-            <div class="col-12 form-group">
+            <div class="col-12 form-group d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">Guardar cambios</button>
                 <a class="btn btn-secondary" asp-action="Index">Volver</a>
             </div>

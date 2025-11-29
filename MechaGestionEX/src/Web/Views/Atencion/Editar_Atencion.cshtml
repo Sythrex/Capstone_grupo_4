@@ -14,26 +14,24 @@
     <div class="card-body">
         <form asp-action="Editar">
             <input type="hidden" asp-for="id" />
-
-            <div class="form-group">
-                <label asp-for="kilometraje_ingreso" class="control-label">Kilometraje de Ingreso</label>
-                <input asp-for="kilometraje_ingreso" class="form-control" />
-                <span asp-validation-for="kilometraje_ingreso" class="text-danger"></span>
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label asp-for="kilometraje_ingreso" class="control-label">Kilometraje de Ingreso</label>
+                    <input asp-for="kilometraje_ingreso" class="form-control" />
+                    <span asp-validation-for="kilometraje_ingreso" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label asp-for="estado" class="control-label">Estado de la Atención</label>
+                    <input asp-for="estado" class="form-control" />
+                    <span asp-validation-for="estado" class="text-danger"></span>
+                </div>
             </div>
-
             <div class="form-group">
                 <label asp-for="observaciones" class="control-label">Observaciones</label>
                 <textarea asp-for="observaciones" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="observaciones" class="text-danger"></span>
             </div>
-
-            <div class="form-group">
-                <label asp-for="estado" class="control-label">Estado de la Atención</label>
-                <input asp-for="estado" class="form-control" />
-                <span asp-validation-for="estado" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
+            <div class="form-group d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 <a asp-action="Detalle" asp-route-id="@Model.id" class="btn btn-secondary">Cancelar</a>
             </div>

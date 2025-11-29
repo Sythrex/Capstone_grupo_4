@@ -8,32 +8,32 @@
 <h2>Editar Vehículo</h2>
 
 <form asp-action="EditVehiculo" asp-route-id="@Model.Id" method="post">
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="Patente"></label>
         <input asp-for="Patente" class="form-control" />
         <span asp-validation-for="Patente" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="Vin"></label>
         <input asp-for="Vin" class="form-control" />
         <span asp-validation-for="Vin" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="Anio"></label>
         <input asp-for="Anio" class="form-control" />
         <span asp-validation-for="Anio" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="Kilometraje"></label>
         <input asp-for="Kilometraje" class="form-control" />
         <span asp-validation-for="Kilometraje" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="Color"></label>
         <input asp-for="Color" class="form-control" />
         <span asp-validation-for="Color" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="TipoId"></label>
         <select asp-for="TipoId" asp-items="Model.TiposVehiculo" class="form-control"></select>
         <span asp-validation-for="TipoId" class="text-danger"></span>

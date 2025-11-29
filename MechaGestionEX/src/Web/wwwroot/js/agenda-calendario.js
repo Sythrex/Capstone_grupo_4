@@ -7,6 +7,7 @@
         window.calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
             locale: 'es',
+            initialView: window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek',
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
@@ -50,5 +51,9 @@
             }
         });
         calendar.render();
+
+        window.addEventListener('resize', function () {
+            calendar.changeView(window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek');
+        });
     }
 });

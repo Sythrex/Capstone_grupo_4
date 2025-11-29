@@ -10,15 +10,15 @@
     var bitacoras = ViewBag.Bitacoras as List<bitacora> ?? new List<bitacora>();
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <a href="@Url.Action("Historial", "Cliente")" class="btn btn-secondary">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+    <a href="@Url.Action("Historial", "Cliente")" class="btn btn-secondary mt-2 mt-md-0">
         <i class="bi bi-arrow-left-circle me-2"></i>Volver al Historial
     </a>
-    <h3>DETALLE DE ATENCIÓN</h3>
+    <h3 class="mt-2 mt-md-0">DETALLE DE ATENCIÓN</h3>
 </div>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 mb-3 mb-md-0">
         <div class="card mb-4">
             <div class="card-header">
                 <i class="bi bi-person-fill me-2"></i>
@@ -88,7 +88,7 @@
                 @foreach (var servicio in Model.servicios)
                 {
                     <li class="list-group-item">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between flex-wrap">
                             <strong>@servicio.tipo_servicio.nombre</strong>
                             <span>Subtotal: $@servicio.sub_total?.ToString("N0")</span>
                         </div>
@@ -127,9 +127,9 @@
                 @foreach (var bit in bitacoras)
                 {
                     <li class="list-group-item">
-                        <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap">
                             <span>@bit.descripcion</span>
-                            <div class="text-end">
+                            <div class="text-end mt-2 mt-md-0">
                                 <small class="text-muted d-block">@bit.tipo</small>
                                 <small class="text-muted">@bit.created_at.ToString("dd/MM/yyyy HH:mm")</small>
                             </div>

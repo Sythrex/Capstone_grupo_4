@@ -73,9 +73,9 @@
 
                     @if (User.IsInRole("Funcionario"))
                     {
-                        <div class="d-flex align-items-center ml-3">
-                            <label class="text-gray-600 mr-2 font-weight-bold">Taller Activo:</label>
-                            <select id="tallerSelect" class="form-control select2" style="width: 200px;" data-placeholder="Seleccione taller"></select>
+                        <div class="d-flex align-items-center ml-3 flex-wrap">
+                            <label class="text-gray-600 mr-2 font-weight-bold col-sm-12 col-md-auto">Taller Activo:</label>
+                            <select id="tallerSelect" class="form-control select2 w-auto" data-placeholder="Seleccione taller"></select>
                         </div>
                     }
 
@@ -101,7 +101,7 @@
                 </div>
             </div>
 
-            <footer class="sticky-footer bg-white">
+            <footer class="sticky-footer bg-white py-3">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>© 2025 - MechagestionEX</span>

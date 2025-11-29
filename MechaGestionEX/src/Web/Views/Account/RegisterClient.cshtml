@@ -8,32 +8,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crear cuenta (Cliente) - MechaGestionEX</title>
+    <title>Crear cuenta - MechaGestionEX</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        html, body { height: 100%; }
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-top: 40px;
-            padding-bottom: 40px;
-            background-color: var(--bs-body-bg);
-        }
-        .form-register {
-            max-width: 720px;
-            width: 100%;
-            padding: 1rem;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 </head>
 <body>
     <main class="form-register">
         <div class="card rounded-4 shadow">
             <div class="card-body p-4 p-md-5">
                 <div class="text-center pb-3 border-bottom">
-                    <h1 class="fw-bold fs-3 mb-1">Crear cuenta (Cliente)</h1>
+                    <h1 class="fw-bold fs-3 mb-1">Crear cuenta</h1>
                     <p class="text-secondary mb-0">Completa tus datos para registrarte</p>
                 </div>
 
@@ -47,7 +31,7 @@
                             <h5 class="mb-2">Datos de la cuenta</h5>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="form-floating">
                                 <input asp-for="NombreUsuario" class="form-control" placeholder="usuario" />
                                 <label asp-for="NombreUsuario"></label>
@@ -55,7 +39,7 @@
                             <span asp-validation-for="NombreUsuario" class="text-danger small"></span>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="form-floating">
                                 <input asp-for="Correo" class="form-control" placeholder="correo@ejemplo.com" />
                                 <label asp-for="Correo"></label>
@@ -63,7 +47,7 @@
                             <span asp-validation-for="Correo" class="text-danger small"></span>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="form-floating">
                                 <input asp-for="Password" class="form-control" placeholder="Contraseña" />
                                 <label asp-for="Password"></label>
@@ -74,8 +58,7 @@
                             </small>
                         </div>
 
-
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="form-floating">
                                 <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirmar contraseña" />
                                 <label asp-for="ConfirmPassword"></label>
@@ -87,7 +70,7 @@
                             <h5 class="mt-3 mb-2">Datos del cliente</h5>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="form-floating position-relative">
                                 <input asp-for="Rut" class="form-control" placeholder="12.345.678-9" id="Rut" autocomplete="off" />
                                 <label asp-for="Rut"></label>
@@ -96,7 +79,7 @@
                             <div class="small mt-1" id="rutEstado" aria-live="polite"></div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="form-floating">
                                 <input asp-for="Nombre" class="form-control" placeholder="Nombre y Apellido" />
                                 <label asp-for="Nombre"></label>
@@ -104,7 +87,7 @@
                             <span asp-validation-for="Nombre" class="text-danger small"></span>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="form-floating">
                                 <input asp-for="Telefono" class="form-control" placeholder="Teléfono" />
                                 <label asp-for="Telefono"></label>
@@ -112,7 +95,7 @@
                             <span asp-validation-for="Telefono" class="text-danger small"></span>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="form-floating">
                                 <input asp-for="Direccion" class="form-control" placeholder="Dirección" />
                                 <label asp-for="Direccion"></label>
@@ -120,7 +103,7 @@
                             <span asp-validation-for="Direccion" class="text-danger small"></span>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label for="regionSelect" class="form-label">Región</label>
                             <select id="regionSelect" class="form-select" name="RegionId">
                                 <option value="">Seleccione una región</option>
@@ -134,7 +117,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label asp-for="ComunaId" class="form-label">Comuna</label>
                             <select asp-for="ComunaId" id="comunaSelect" class="form-select" disabled>
                                 <option value="">Seleccione una comuna</option>

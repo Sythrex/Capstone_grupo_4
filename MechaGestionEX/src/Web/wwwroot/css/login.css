@@ -1,0 +1,80 @@
+﻿html, body {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: var(--bs-body-bg);
+    overflow-x: hidden;
+}
+
+.form-register {
+    max-width: 720px;
+    width: 100%;
+    padding: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+        align-items: flex-start;
+    }
+
+    .card-body {
+        padding: 1rem !important;
+    }
+
+    .form-floating input, .form-floating select {
+        font-size: 0.875rem;
+    }
+
+    small, .small {
+        font-size: 0.75rem;
+    }
+
+    .card {
+        margin-top: 0;
+    }
+
+    h1.fs-3 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+        align-items: flex-start;
+    }
+
+    .card-body {
+        padding: 1rem !important;
+    }
+
+    .form-floating input, .form-floating select {
+        font-size: 0.875rem;
+    }
+
+    small, .small {
+        font-size: 0.75rem;
+    }
+
+    .card {
+        margin-top: 0;
+    }
+
+    h1.fs-3 {
+        font-size: 1.5rem;
+    }
+}

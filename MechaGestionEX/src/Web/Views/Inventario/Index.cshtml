@@ -7,20 +7,20 @@
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Control de Inventario</h6>
-        <div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
             <button class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#agregarRepuestoModal">
                 <span class="icon text-white-50"><i class="fas fa-plus"></i></span>
                 <span class="text">Agregar Repuesto</span>
             </button>
-            <button class="btn btn-warning btn-icon-split ms-2" id="editarStockGlobal">
+            <button class="btn btn-warning btn-icon-split" id="editarStockGlobal">
                 <span class="icon text-white-50"><i class="fas fa-edit"></i></span>
                 <span class="text">Editar Stock</span>
             </button>
-            <button class="btn btn-success btn-icon-split ms-2" id="guardarCambios" style="display:none;">
+            <button class="btn btn-success btn-icon-split" id="guardarCambios" style="display:none;">
                 <span class="icon text-white-50"><i class="fas fa-save"></i></span>
                 <span class="text">Guardar Cambios</span>
             </button>
-            <button class="btn btn-secondary btn-icon-split ms-2" id="cancelarEdicion" style="display:none;">
+            <button class="btn btn-secondary btn-icon-split" id="cancelarEdicion" style="display:none;">
                 <span class="icon text-white-50"><i class="fas fa-times"></i></span>
                 <span class="text">Cancelar Edición</span>
             </button>
@@ -57,37 +57,64 @@
                 </button>
             </div>
             <div class="modal-body">
-                <textarea id="notaBatch" class="form-control" placeholder="Nota para los logs de inventario (opcional)" rows="3"></textarea>
+                <textarea id="notaBatch" class="form-control" rows="3" placeholder="Ingrese una nota para estos cambios..."></textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="confirmarGuardar">Confirmar y Guardar</button>
+                <button type="button" class="btn btn-primary" id="confirmarGuardarBatch">Confirmar</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="agregarRepuestoModal" tabindex="-1" role="dialog" aria-labelledby="agregarRepuestoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
+<div class="modal fade" id="agregarRepuestoModal" tabindex="-1" role="dialog" aria-labelledby="agregarRepuestoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="agregarRepuestoLabel">Agregar Repuesto</h5>
+                <h5 class="modal-title" id="agregarRepuestoModalLabel">Agregar Repuesto</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="tipoAgregar" id="tipoExistente" value="existente" checked>
-                        <label class="form-check-label" for="tipoExistente">Seleccionar Existente</label>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="tipoNuevo" name="tipoAgregar" value="nuevo" class="custom-control-input" checked>
+                        <label class="custom-control-label" for="tipoNuevo">Nuevo Repuesto</label>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="tipoAgregar" id="tipoNuevo" value="nuevo">
-                        <label class="form-check-label" for="tipoNuevo">Crear Nuevo</label>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="tipoExistente" name="tipoAgregar" value="existente" class="custom-control-input">
+                        <label class="custom-control-label" for="tipoExistente">Repuesto Existente</label>
                     </div>
                 </div>
-                <div id="existenteForm">
+
+                <div id="nuevoRepuestoForm">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6 form-group">
+                            <label>SKU</label>
+                            <input type="text" id="nuevoSku" class="form-control" placeholder="SKU">
+                        </div>
+                        <div class="col-sm-12 col-md-6 form-group">
+                            <label>Nombre</label>
+                            <input type="text" id="nuevoNombre" class="form-control" placeholder="Nombre">
+                        </div>
+                        <div class="col-sm-12 col-md-6 form-group">
+                            <label>Marca</label>
+                            <input type="text" id="nuevaMarca" class="form-control" placeholder="Marca">
+                        </div>
+                        <div class="col-sm-12 col-md-6 form-group">
+                            <label>Categoría</label>
+                            <select id="nuevaCategoria" class="form-control">
+                                @foreach (var cat in ViewBag.Categorias)
+                                {
+                                    <option value="@cat.id">@cat.nombre</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="existenteRepuestoForm" style="display:none;">
                     <div class="table-responsive">
                         <table id="repuestosTable" class="table table-bordered table-hover" width="100%" cellspacing="0">
                             <thead>
@@ -101,29 +128,6 @@
                             </thead>
                             <tbody></tbody>
                         </table>
-                    </div>
-                </div>
-                <div id="nuevoForm" style="display:none;">
-                    <div class="form-group">
-                        <label for="nuevoSku">SKU</label>
-                        <input type="text" id="nuevoSku" class="form-control" placeholder="SKU">
-                    </div>
-                    <div class="form-group">
-                        <label for="nuevoNombre">Nombre</label>
-                        <input type="text" id="nuevoNombre" class="form-control" placeholder="Nombre">
-                    </div>
-                    <div class="form-group">
-                        <label for="nuevaMarca">Marca</label>
-                        <input type="text" id="nuevaMarca" class="form-control" placeholder="Marca">
-                    </div>
-                    <div class="form-group">
-                        <label for="nuevaCategoria">Categoría</label>
-                        <select id="nuevaCategoria" class="form-control">
-                            @foreach (var cat in ViewBag.Categorias)
-                            {
-                                <option value="@cat.id">@cat.nombre</option>
-                            }
-                        </select>
                     </div>
                 </div>
             </div>
@@ -146,13 +150,15 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="editRepuestoId">
-                <div class="form-group">
-                    <label for="variacionStock">Variación (positivo o negativo)</label>
-                    <input type="number" id="variacionStock" class="form-control" placeholder="Variación (positivo o negativo)">
-                </div>
-                <div class="form-group">
-                    <label for="nuevoPrecio">Nuevo Precio Unitario (opcional)</label>
-                    <input type="number" id="nuevoPrecio" class="form-control" placeholder="Nuevo Precio Unitario (opcional)">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 form-group">
+                        <label for="variacionStock">Variación (positivo o negativo)</label>
+                        <input type="number" id="variacionStock" class="form-control" placeholder="Variación (positivo o negativo)">
+                    </div>
+                    <div class="col-sm-12 col-md-6 form-group">
+                        <label for="nuevoPrecio">Nuevo Precio Unitario (opcional)</label>
+                        <input type="number" id="nuevoPrecio" class="form-control" placeholder="Nuevo Precio Unitario (opcional)">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="notaStock">Nota</label>

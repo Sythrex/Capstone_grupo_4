@@ -58,6 +58,7 @@
         $('#logsContainer').html(data);
 
         $('#logsTable').DataTable({
+            responsive: true,
             searching: false,
             ordering: false,
             info: false,
