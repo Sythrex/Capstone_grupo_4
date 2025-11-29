@@ -23,7 +23,7 @@ namespace Web.ViewModels
         [Display(Name = "Cliente")]
         public int ClienteId { get; set; }
 
-        [Display(Name = "Vehículo (Opcional)")]
+        [Display(Name = "Vehículo")]
         public int? VehiculoId { get; set; }
 
         public IEnumerable<SelectListItem>? ClientesDisponibles { get; set; }

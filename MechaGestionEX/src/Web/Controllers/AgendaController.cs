@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Security.Claims;
 using Web.Models;
 using Web.ViewModels;
@@ -29,26 +30,42 @@ namespace Web.Controllers
         [HttpGet]
         public IActionResult GetAgendas(DateTime start, DateTime end)
         {
-            var eventos = _context.agenda
-                                  .Where(a => a.fecha_agenda >= start && a.fecha_agenda <= end)
-                                  .Select(e => new {
-                                      id = e.id,
-                                      title = e.titulo,
-                                      start = e.fecha_agenda.ToString("o"),
-                                      end = e.fecha_agenda.AddHours(1).ToString("o"),
-                                      url = Url.Action("detalle", "atencion", new { id = e.id })
-                                  })
-                                  .ToList();
+            int? tallerId = HttpContext.Session.GetInt32("TallerId");
+            if (!tallerId.HasValue)
+            {
+                var tallerIdClaim = User.FindFirstValue("TallerId");
+                if (!int.TryParse(tallerIdClaim, out int parsedTallerId))
+                {
+                    return BadRequest("No se pudo obtener el taller asignado.");
+                }
+                tallerId = parsedTallerId;
+            }
+
+            var eventos = _context.atencion
+                .Where(at => at.taller_id == tallerId.Value &&
+                             at.agenda.fecha_agenda >= start &&
+                             at.agenda.fecha_agenda <= end)
+                .Select(at => new
+                {
+                    id = at.id,
+                    title = at.agenda.titulo,
+                    start = at.agenda.fecha_agenda.ToString("o"),
+                    end = at.agenda.fecha_agenda.AddHours(1).ToString("o"),
+                    url = Url.Action("detalle", "atencion", new { id = at.id })
+                })
+                .ToList();
 
             return Json(eventos);
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string fecha)
         {
             var viewModel = new CrearAgendaViewModel
             {
                 ClientesDisponibles = new SelectList(await _context.cliente.ToListAsync(), "id", "nombre"),
-                FechaAgenda = DateTime.Today.AddHours(9)
+                FechaAgenda = string.IsNullOrEmpty(fecha)
+                    ? DateTime.Today.AddHours(9)
+                    : DateTime.Parse(fecha, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal)
             };
             return View(viewModel);
         }

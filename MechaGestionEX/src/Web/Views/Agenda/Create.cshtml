@@ -4,55 +4,54 @@
     ViewData["Title"] = "Agendar Nueva Hora";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <a href="javascript:history.back()" class="btn btn-secondary">
-        <i class="bi bi-arrow-left-circle me-2"></i>Volver
-    </a>
-    <h3>AGENDAR NUEVA HORA</h3>
-</div>
-
-<div class="row">
-    <div class="col-md-8">
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Agendar Nueva Hora</h6>
+        <a href="javascript:history.back()" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Volver
+        </a>
+    </div>
+    <div class="card-body">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <h4>Datos de la Cita</h4>
-            <div class="mb-3">
-                <label asp-for="Titulo" class="form-label"></label>
+            <h4 class="card-title">Datos de la Cita</h4>
+            <div class="form-group">
+                <label asp-for="Titulo" class="control-label"></label>
                 <input asp-for="Titulo" class="form-control" />
                 <span asp-validation-for="Titulo" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="FechaAgenda" class="form-label"></label>
+            <div class="form-group">
+                <label asp-for="FechaAgenda" class="control-label"></label>
                 <input asp-for="FechaAgenda" type="datetime-local" class="form-control" />
                 <span asp-validation-for="FechaAgenda" class="text-danger"></span>
             </div>
 
             <hr />
 
-            <h4>Datos del Cliente y Vehículo</h4>
-            <div class="mb-3">
-                <label asp-for="ClienteId" class="form-label"></label>
-                <select asp-for="ClienteId" asp-items="@Model.ClientesDisponibles" class="form-select" id="cliente-select">
+            <h4 class="card-title">Datos del Cliente y Vehículo</h4>
+            <div class="form-group">
+                <label asp-for="ClienteId" class="control-label"></label>
+                <select asp-for="ClienteId" asp-items="@Model.ClientesDisponibles" class="form-control select2" id="cliente-select">
                     <option value="">-- Seleccione un Cliente --</option>
                 </select>
                 <span asp-validation-for="ClienteId" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="VehiculoId" class="form-label"></label>
-                <select asp-for="VehiculoId" class="form-select" id="vehiculo-select" disabled>
+            <div class="form-group">
+                <label asp-for="VehiculoId" class="control-label"></label>
+                <select asp-for="VehiculoId" class="form-control select2" id="vehiculo-select" disabled>
                     <option value="">-- Seleccione un cliente primero --</option>
                 </select>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Observaciones" class="form-label"></label>
+            <div class="form-group">
+                <label asp-for="Observaciones" class="control-label"></label>
                 <textarea asp-for="Observaciones" class="form-control" rows="3"></textarea>
             </div>
 
-            <div class="form-group mt-4">
+            <div class="form-group">
                 <button type="submit" class="btn btn-primary">Agendar y Crear Atención</button>
                 <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
             </div>

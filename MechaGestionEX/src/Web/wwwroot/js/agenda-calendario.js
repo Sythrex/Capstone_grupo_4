@@ -4,7 +4,7 @@
         var today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+        window.calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
             locale: 'es',
             headerToolbar: {

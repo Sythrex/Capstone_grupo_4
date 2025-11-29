@@ -1,102 +1,126 @@
 ﻿<!DOCTYPE html>
-<html lang="es" data-bs-theme="dark">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>@ViewData["Title"] - MechagestionEX - Panel de Control</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="~/css/sb-admin-2/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="~/lib/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.bootstrap5.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body>
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-        <symbol id="bootstrap" fill="currentColor" viewBox="0 0 118 94">
-            <title>Bootstrap</title>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z"></path>
-        </symbol>
-        <symbol id="facebook" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
-        </symbol>
-        <symbol id="instagram" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.282.24.705.275 1.486.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z" />
-        </symbol>
-    </svg>
+<body id="page-top">
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">MechagestionEX</div>
+            </a>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-2 border-end vh-100">
-                <div class="sidebar-heading p-3">
-                    <h5>Menú Principal</h5>
-                </div>
-                <div class="list-group list-group-flush">
-                    <a href=@Url.Action("index","agenda") class="list-group-item list-group-item-action"><i class="bi bi-calendar-plus me-2"></i> Agenda</a>
-                    <a href=@Url.Action("index", "funcionarios") class="list-group-item list-group-item-action"><i class="bi bi-card-list me-2"></i> Funcionarios</a>
-                    @* <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-car-front me-2"></i> Mis Vehículos</a> *@
-                    <a href=@Url.Action("index", "inventario") class="list-group-item list-group-item-action"><i class="bi bi-tools me-2"></i> Control de Stock</a>
-                    @* <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reportes</a> *@
-                    <a href=@Url.Action("index", "clientes") class="list-group-item list-group-item-action"><i class="bi bi-file-earmark-bar-graph me-2"></i> Clientes</a>
-                </div>
+            <hr class="sidebar-divider my-0">
+
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Home")">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider">
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Agenda")">
+                    <i class="fas fa-fw fa-calendar"></i>
+                    <span>Agenda</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Funcionarios")">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Funcionarios</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Inventario")">
+                    <i class="fas fa-fw fa-boxes"></i>
+                    <span>Control de Stock</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Clientes")">
+                    <i class="fas fa-fw fa-user-friends"></i>
+                    <span>Clientes</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block">
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
+        </ul>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
 
-            <div class="col-10 d-flex flex-column vh-100">
-                <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
-                    <div class="container-fluid">
-                        <span class="navbar-brand">Panel de Control</span>
-                        @if (User.IsInRole("Funcionario"))
-                        {
-                            <div class="d-flex align-items-center ms-3">
-                                <label class="text-light me-2">Taller Activo:</label>
-                                <select id="tallerSelect" class="form-select select2" style="width: 200px;" data-placeholder="Seleccione taller"></select>
-                            </div>
-                        }
-                        <div class="collapse navbar-collapse">
-                            <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                                <li class="nav-item">
-                                    <span class="navbar-text me-3">
-                                        Bienvenido, @User.Identity.Name
-                                    </span>
-                                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-outline-light">
-                                            <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
+                    @if (User.IsInRole("Funcionario"))
+                    {
+                        <div class="d-flex align-items-center ml-3">
+                            <label class="text-gray-600 mr-2 font-weight-bold">Taller Activo:</label>
+                            <select id="tallerSelect" class="form-control select2" style="width: 200px;" data-placeholder="Seleccione taller"></select>
                         </div>
-                    </div>
-                </nav>
+                    }
 
-                <main role="main" class="container-fluid p-4 flex-grow-1">
-                    @RenderBody()
-                </main>
-
-                <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 border-top mt-auto">
-                    <div class="col-md-4 d-flex align-items-center">
-                        <span class="mb-3 mb-md-0 text-body-secondary">© 2025 - MechagestionEX</span>
-                    </div>
-
-                    <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-                        <li class="ms-3"><a class="text-body-secondary" href="#" aria-label="Instagram"><svg class="bi" width="24" height="24" aria-hidden="true"><use xlink:href="#instagram"></use></svg></a></li>
-                        <li class="ms-3"><a class="text-body-secondary" href="#" aria-label="Facebook"><svg class="bi" width="24" height="24" aria-hidden="true"><use xlink:href="#facebook"></use></svg></a></li>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenido, @User.Identity.Name</span>
+                                <img class="img-profile rounded-circle" src="~/img/undraw_profile.svg">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i> Cerrar Sesión
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
                     </ul>
-                </footer>
+                </nav>
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
             </div>
+
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>© 2025 - MechagestionEX</span>
+                    </div>
+                </div>
+            </footer>
         </div>
     </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+    <script src="~/js/sb-admin-2/sb-admin-2.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.bootstrap5.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    <script src="~/js/layout.js"></script>
+    <script src="~/js/layout.js" asp-append-version="true"></script>
 </body>
 </html>

@@ -2,26 +2,32 @@
 @{
     ViewData["Title"] = "Detalles Cliente";
 }
-<h1 class="mb-4">Detalles Cliente</h1>
 
-<dl class="row">
-    <dt class="col-sm-3">id</dt>
-    <dd class="col-sm-9">@Model.id</dd>
-    <dt class="col-sm-3">rut</dt>
-    <dd class="col-sm-9">@Model.rut</dd>
-    <dt class="col-sm-3">nombre</dt>
-    <dd class="col-sm-9">@Model.nombre</dd>
-    <dt class="col-sm-3">correo</dt>
-    <dd class="col-sm-9">@Model.correo</dd>
-    <dt class="col-sm-3">telefono</dt>
-    <dd class="col-sm-9">@Model.telefono</dd>
-    <dt class="col-sm-3">direccion</dt>
-    <dd class="col-sm-9">@Model.direccion</dd>
-    <dt class="col-sm-3">comuna_id</dt>
-    <dd class="col-sm-9">@Model.comuna_id</dd>
-</dl>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Detalles Cliente</h6>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">id</dt>
+            <dd class="col-sm-9">@Model.id</dd>
+            <dt class="col-sm-3">rut</dt>
+            <dd class="col-sm-9">@Model.rut</dd>
+            <dt class="col-sm-3">nombre</dt>
+            <dd class="col-sm-9">@Model.nombre</dd>
+            <dt class="col-sm-3">correo</dt>
+            <dd class="col-sm-9">@Model.correo</dd>
+            <dt class="col-sm-3">telefono</dt>
+            <dd class="col-sm-9">@Model.telefono</dd>
+            <dt class="col-sm-3">direccion</dt>
+            <dd class="col-sm-9">@Model.direccion</dd>
+            <dt class="col-sm-3">comuna_id</dt>
+            <dd class="col-sm-9">@Model.comuna_id</dd>
+        </dl>
 
-<div class="d-flex gap-2">
-    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model.id">Editar</a>
-    <a class="btn btn-secondary" asp-action="Index">Volver</a>
+        <div class="form-group">
+            <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model.id">Editar</a>
+            <a class="btn btn-secondary" asp-action="Index">Volver</a>
+        </div>
+    </div>
 </div>

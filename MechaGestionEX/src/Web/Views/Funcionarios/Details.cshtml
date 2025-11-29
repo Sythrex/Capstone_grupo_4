@@ -1,0 +1,27 @@
+﻿@model Infrastructure.Persistence.Models.funcionario
+@{
+    ViewData["Title"] = "Detalles de Funcionario";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Detalles de Funcionario</h6>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">ID</dt>
+            <dd class="col-sm-9">@Model.id</dd>
+            <dt class="col-sm-3">RUT</dt>
+            <dd class="col-sm-9">@Model.rut</dd>
+            <dt class="col-sm-3">Nombre</dt>
+            <dd class="col-sm-9">@Model.nombre</dd>
+            <dt class="col-sm-3">Especialidad</dt>
+            <dd class="col-sm-9">@Model.especialidad</dd>
+            <dt class="col-sm-3">Activo</dt>
+            <dd class="col-sm-9">@(Model.activo ? "Sí" : "No")</dd>
+            <dt class="col-sm-3">Tipo</dt>
+            <dd class="col-sm-9">@(Model.tipo?.nombre ?? "Sin Tipo")</dd>
+        </dl>
+        <a class="btn btn-secondary" asp-action="Index">Volver</a>
+    </div>
+</div>
