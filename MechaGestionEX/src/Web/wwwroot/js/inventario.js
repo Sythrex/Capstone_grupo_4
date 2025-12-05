@@ -4,6 +4,8 @@
         var cambios = [];
         var isEditMode = false;
         var table;
+        var selectedIds = [];
+
 
         function initViewTable(dataSource) {
             return $('#inventarioTable').DataTable({
@@ -139,7 +141,7 @@
         $('#confirmarGuardarBatch').click(function () {
             var nota = $('#notaBatch').val();
             var data = { cambios: cambios, nota: nota };
-            $.post('/Inventario/ActualizarStockBatch', data, function (response) {
+            $.post('/Inventario/ActualizarStocksBatch', data, function (response) {
                 if (response.success) {
                     $('#notaBatchModal').modal('hide');
                     location.reload();
@@ -224,9 +226,11 @@
 
             if (!selectedIds.includes(id) && !rowData.asignado) {
                 selectedIds.push(id);
+                rowData.asignado = true;
                 repuestosTable.cell(row, 4).data(rowData).invalidate().draw(false);
             }
         });
+
 
         $('#guardarAgregar').click(function () {
             var tipo = $('input[name="tipoAgregar"]:checked').val();
@@ -275,9 +279,11 @@
             var index = selectedIds.indexOf(id);
             if (index > -1) {
                 selectedIds.splice(index, 1);
+                rowData.asignado = false; 
                 repuestosTable.cell(row, 4).data(rowData).invalidate().draw(false);
             }
         });
+
 
         $('.verLogs').click(function () {
             var id = $(this).data('id');

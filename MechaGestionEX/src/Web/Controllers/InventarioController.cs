@@ -316,85 +316,203 @@ namespace Web.Controllers
             return Json(inventario);
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> ActualizarStocksBatch(List<StockChange> cambios, string nota)
+        //{
+        //    var tallerId = HttpContext.Session.GetInt32("TallerId").Value;
+        //    var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+        //    bool allSuccess = true;
+        //    var messages = new List<string>();
+
+        //    if (cambios == null || cambios.Count == 0)
+        //    {
+        //        return Json(new { success = false, message = "No se recibieron cambios de stock." });
+        //    }
+
+        //    foreach (var cambio in cambios)
+        //    {
+        //        var unidades = await _context.repuesto_unidades
+        //            .FirstOrDefaultAsync(ru => ru.id == cambio.id && ru.taller_id == tallerId);
+
+        //        if (unidades == null)
+        //        {
+        //            messages.Add($"Stock ID {cambio.id} no encontrado.");
+        //            allSuccess = false;
+        //            continue;
+        //        }
+
+        //        bool hasStockChange = false;
+
+        //        if (cambio.disp != 0)
+        //        {
+        //            var stockAnteriorDisp = unidades.stock_disponible;
+        //            unidades.stock_disponible =  cambio.disp;
+        //            if (unidades.stock_disponible < 0)
+        //            {
+        //                messages.Add($"Stock disponible no puede ser negativo para ID {cambio.id}.");
+        //                allSuccess = false;
+        //                continue;
+        //            }
+        //            var stockNuevoDisp = unidades.stock_disponible;
+        //            var logDisp = new log_inventario
+        //            {
+        //                repuesto_unidades_id = unidades.id,
+        //                usuario_id = usuarioId,
+        //                variacion_stock = cambio.variacionDisp,
+        //                stock_anterior = stockAnteriorDisp,
+        //                stock_nuevo = stockNuevoDisp,
+        //                nota = nota ?? "Actualización batch de stock disponible",
+        //                fecha_log = DateTime.Now
+        //            };
+        //            _context.log_inventario.Add(logDisp);
+        //            hasStockChange = true;
+        //        }
+
+        //        if (cambio.variacionRes != 0)
+        //        {
+        //            var stockAnteriorRes = unidades.stock_reservado ?? 0;
+        //            unidades.stock_reservado = (unidades.stock_reservado ?? 0) + cambio.variacionRes;
+        //            if ((unidades.stock_reservado ?? 0) < 0)
+        //            {
+        //                messages.Add($"Stock reservado no puede ser negativo para ID {cambio.repuestoUnidadesId}.");
+        //                allSuccess = false;
+        //                continue;
+        //            }
+        //            var stockNuevoRes = unidades.stock_reservado ?? 0;
+        //            var logRes = new log_inventario
+        //            {
+        //                repuesto_unidades_id = unidades.id,
+        //                usuario_id = usuarioId,
+        //                variacion_stock = cambio.variacionRes,
+        //                stock_anterior = stockAnteriorRes,
+        //                stock_nuevo = stockNuevoRes,
+        //                nota = nota ?? "Actualización batch de stock reservado",
+        //                fecha_log = DateTime.Now
+        //            };
+        //            _context.log_inventario.Add(logRes);
+        //            hasStockChange = true;
+        //        }
+
+        //        if (cambio.nuevoPrecio.HasValue)
+        //        {
+        //            unidades.precio_unitario = cambio.nuevoPrecio.Value;
+        //        }
+
+        //        if (!hasStockChange && !cambio.nuevoPrecio.HasValue)
+        //        {
+        //            continue;
+        //        }
+        //    }
+
+        //    if (allSuccess)
+        //    {
+        //        await _context.SaveChangesAsync();
+        //        return Json(new { success = true });
+        //    }
+        //    else
+        //    {
+        //        return Json(new { success = false, message = string.Join("\n", messages) });
+        //    }
+        //}
+
         [HttpPost]
         public async Task<IActionResult> ActualizarStocksBatch(List<StockChange> cambios, string nota)
         {
             var tallerId = HttpContext.Session.GetInt32("TallerId").Value;
             var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
-            bool allSuccess = true;
             var messages = new List<string>();
+            bool allSuccess = true;
+
+            if (cambios == null || cambios.Count == 0)
+            {
+                return Json(new { success = false, message = "No se recibieron cambios de stock." });
+            }
 
             foreach (var cambio in cambios)
             {
                 var unidades = await _context.repuesto_unidades
-                    .FirstOrDefaultAsync(ru => ru.id == cambio.repuestoUnidadesId && ru.taller_id == tallerId);
+                    .FirstOrDefaultAsync(ru => ru.id == cambio.id && ru.taller_id == tallerId);
 
                 if (unidades == null)
                 {
-                    messages.Add($"Stock ID {cambio.repuestoUnidadesId} no encontrado.");
+                    messages.Add($"Stock ID {cambio.id} no encontrado.");
                     allSuccess = false;
                     continue;
                 }
 
                 bool hasStockChange = false;
 
-                if (cambio.variacionDisp != 0)
+                // STOCK DISPONIBLE (nuevo valor absoluto)
+                if (cambio.disp.HasValue)
                 {
                     var stockAnteriorDisp = unidades.stock_disponible;
-                    unidades.stock_disponible += cambio.variacionDisp;
-                    if (unidades.stock_disponible < 0)
+                    var nuevoStockDisp = cambio.disp.Value;
+
+                    if (nuevoStockDisp < 0)
                     {
-                        messages.Add($"Stock disponible no puede ser negativo para ID {cambio.repuestoUnidadesId}.");
+                        messages.Add($"Stock disponible no puede ser negativo para ID {cambio.id}.");
                         allSuccess = false;
-                        continue;
                     }
-                    var stockNuevoDisp = unidades.stock_disponible;
-                    var logDisp = new log_inventario
+                    else
                     {
-                        repuesto_unidades_id = unidades.id,
-                        usuario_id = usuarioId,
-                        variacion_stock = cambio.variacionDisp,
-                        stock_anterior = stockAnteriorDisp,
-                        stock_nuevo = stockNuevoDisp,
-                        nota = nota ?? "Actualización batch de stock disponible",
-                        fecha_log = DateTime.Now
-                    };
-                    _context.log_inventario.Add(logDisp);
-                    hasStockChange = true;
+                        var variacionDisp = nuevoStockDisp - stockAnteriorDisp;
+                        unidades.stock_disponible = nuevoStockDisp;
+
+                        var logDisp = new log_inventario
+                        {
+                            repuesto_unidades_id = unidades.id,
+                            usuario_id = usuarioId,
+                            variacion_stock = variacionDisp,
+                            stock_anterior = stockAnteriorDisp,
+                            stock_nuevo = nuevoStockDisp,
+                            nota = nota ?? "Actualización batch de stock disponible",
+                            fecha_log = DateTime.Now
+                        };
+                        _context.log_inventario.Add(logDisp);
+                        hasStockChange = true;
+                    }
                 }
 
-                if (cambio.variacionRes != 0)
+                // STOCK RESERVADO (nuevo valor absoluto)
+                if (cambio.res.HasValue)
                 {
                     var stockAnteriorRes = unidades.stock_reservado ?? 0;
-                    unidades.stock_reservado = (unidades.stock_reservado ?? 0) + cambio.variacionRes;
-                    if ((unidades.stock_reservado ?? 0) < 0)
+                    var nuevoStockRes = cambio.res.Value;
+
+                    if (nuevoStockRes < 0)
                     {
-                        messages.Add($"Stock reservado no puede ser negativo para ID {cambio.repuestoUnidadesId}.");
+                        messages.Add($"Stock reservado no puede ser negativo para ID {cambio.id}.");
                         allSuccess = false;
-                        continue;
                     }
-                    var stockNuevoRes = unidades.stock_reservado ?? 0;
-                    var logRes = new log_inventario
+                    else
                     {
-                        repuesto_unidades_id = unidades.id,
-                        usuario_id = usuarioId,
-                        variacion_stock = cambio.variacionRes,
-                        stock_anterior = stockAnteriorRes,
-                        stock_nuevo = stockNuevoRes,
-                        nota = nota ?? "Actualización batch de stock reservado",
-                        fecha_log = DateTime.Now
-                    };
-                    _context.log_inventario.Add(logRes);
-                    hasStockChange = true;
+                        var variacionRes = nuevoStockRes - stockAnteriorRes;
+                        unidades.stock_reservado = nuevoStockRes;
+
+                        var logRes = new log_inventario
+                        {
+                            repuesto_unidades_id = unidades.id,
+                            usuario_id = usuarioId,
+                            variacion_stock = variacionRes,
+                            stock_anterior = stockAnteriorRes,
+                            stock_nuevo = nuevoStockRes,
+                            nota = nota ?? "Actualización batch de stock reservado",
+                            fecha_log = DateTime.Now
+                        };
+                        _context.log_inventario.Add(logRes);
+                        hasStockChange = true;
+                    }
                 }
 
-                if (cambio.nuevoPrecio.HasValue)
+                // PRECIO UNITARIO
+                if (cambio.precio.HasValue)
                 {
-                    unidades.precio_unitario = cambio.nuevoPrecio.Value;
+                    unidades.precio_unitario = cambio.precio.Value;
                 }
 
-                if (!hasStockChange && !cambio.nuevoPrecio.HasValue)
+                if (!hasStockChange && !cambio.precio.HasValue)
                 {
+                    // No hubo cambios reales para este registro
                     continue;
                 }
             }
@@ -404,17 +522,16 @@ namespace Web.Controllers
                 await _context.SaveChangesAsync();
                 return Json(new { success = true });
             }
-            else
-            {
-                return Json(new { success = false, message = string.Join("\n", messages) });
-            }
+
+            return Json(new { success = false, message = string.Join("\n", messages) });
         }
+
         public class StockChange
         {
-            public int repuestoUnidadesId { get; set; }
-            public int variacionDisp { get; set; }
-            public int variacionRes { get; set; }
-            public int? nuevoPrecio { get; set; }
+            public int id { get; set; }
+            public int? disp { get; set; }
+            public int? res { get; set; }
+            public int? precio { get; set; }
         }
 
         public async Task<IActionResult> Detalles(int id) // id = repuestoUnidadesId
@@ -523,5 +640,32 @@ namespace Web.Controllers
             }
             return Json(new { success = true });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRepuestosNoAsignados()
+        {
+            var tallerId = HttpContext.Session.GetInt32("TallerId").Value;
+
+            // Repuestos que NO están asignados activamente a este taller
+            var repuestos = await _context.repuesto
+                .Where(r => !_context.taller_repuesto
+                    .Any(tr => tr.taller_id == tallerId
+                               && tr.repuesto_id == r.id
+                               && tr.activo))
+                .Select(r => new
+                {
+                    id = r.id,
+                    sku = r.sku,
+                    nombre = r.nombre,
+                    marca = r.marca,
+                    categoriaNombre = r.categoria != null ? r.categoria.nombre : "Sin Categoría",
+                    // Para el DataTable, partimos como "no asignados"
+                    asignado = false
+                })
+                .ToListAsync();
+
+            return Json(repuestos);
+        }
+
     }
 }
