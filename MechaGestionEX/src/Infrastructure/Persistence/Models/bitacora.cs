@@ -15,5 +15,7 @@ public partial class bitacora
 
     public string? tipo { get; set; }
 
+    public byte[]? imagen { get; set; }
+
     public virtual atencion atencion { get; set; } = null!;
 }

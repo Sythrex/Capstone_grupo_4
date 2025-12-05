@@ -181,6 +181,8 @@ public partial class TallerMecanicoContext : DbContext
                 .HasForeignKey(d => d.atencion_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_bitacora_atencion");
+
+            entity.Property(e => e.imagen).HasColumnType("varbinary(max)");
         });
 
         modelBuilder.Entity<categorium>(entity =>

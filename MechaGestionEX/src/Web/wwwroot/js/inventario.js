@@ -184,7 +184,7 @@
                     var repuestosTable = $('#repuestosTable').DataTable({
                         responsive: true,
                         ajax: {
-                            url: '/Inventario/GetRepuestosNoAsignados',
+                            url: '/Inventario/GetRepuestosGlobales',
                             dataSrc: ''
                         },
                         columns: [

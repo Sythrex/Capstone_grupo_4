@@ -98,9 +98,9 @@ main {
     padding-top: 0 !important;
 }
 
-main .container-fluid {
-    padding-top: 0 !important;
-}
+    main .container-fluid {
+        padding-top: 0 !important;
+    }
 
 .fixed-bottom {
     bottom: 20px !important;

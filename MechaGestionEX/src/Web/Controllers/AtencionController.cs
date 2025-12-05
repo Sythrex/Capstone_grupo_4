@@ -36,7 +36,7 @@ namespace Web.Controllers
                     .ThenInclude(s => s.servicio_repuestos)
                         .ThenInclude(sr => sr.repuesto_unidades)
                             .ThenInclude(ru => ru.repuesto)
-                .FirstOrDefaultAsync(a => a.agenda_id == id);
+                .FirstOrDefaultAsync(a => a.agenda_id == id-1);
 
             if (atencion == null)
             {
@@ -55,7 +55,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AgregarBitacora(int id, string descripcion, string tipo)
+        public async Task<IActionResult> AgregarBitacora(int id, string descripcion, string tipo, IFormFile? imagen)
         {
             if (string.IsNullOrWhiteSpace(descripcion))
             {
@@ -68,18 +68,29 @@ namespace Web.Controllers
                 return NotFound();
             }
 
+            byte[]? imagenBytes = null;
+            if (imagen != null && imagen.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await imagen.CopyToAsync(memoryStream);
+                    imagenBytes = memoryStream.ToArray();
+                }
+            }
+
             var nuevaBitacora = new bitacora
             {
                 atencion_id = id,
                 descripcion = descripcion,
                 created_at = DateTime.Now,
-                tipo = tipo
+                tipo = tipo,
+                imagen = imagenBytes
             };
 
             _context.bitacora.Add(nuevaBitacora);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Detalle", new { id = atencion.agenda_id });
+            return RedirectToAction("Detalle", new { id = atencion.agenda_id + 1 });
         }
 
         public async Task<IActionResult> Editar_Atencion(int id)

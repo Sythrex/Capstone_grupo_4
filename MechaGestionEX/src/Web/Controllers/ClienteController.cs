@@ -104,33 +104,38 @@ namespace Web.Controllers
 
         [HttpPost("Atencion/{id}/AgregarComentario")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AgregarComentario(int id, string comentario)
+        public async Task<IActionResult> AgregarComentario(int id, string comentario, IFormFile? imagen)
         {
             if (string.IsNullOrWhiteSpace(comentario))
             {
                 return BadRequest("Comentario requerido.");
             }
-
             int clienteId = int.Parse(User.FindFirst("ClienteId")?.Value ?? "0");
             int usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-
             var atencion = await _db.atencion.FindAsync(id);
             if (atencion == null || atencion.cliente_id != clienteId)
             {
                 return NotFound();
             }
-
+            byte[]? imagenBytes = null;
+            if (imagen != null && imagen.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await imagen.CopyToAsync(memoryStream);
+                    imagenBytes = memoryStream.ToArray();
+                }
+            }
             var nuevaBitacora = new bitacora
             {
                 atencion_id = id,
                 descripcion = comentario,
                 created_at = DateTime.Now,
-                tipo = "Cliente"
+                tipo = "Cliente",
+                imagen = imagenBytes
             };
-
             _db.bitacora.Add(nuevaBitacora);
             await _db.SaveChangesAsync();
-
             return RedirectToAction("Atencion", new { id });
         }
 
@@ -281,9 +286,9 @@ namespace Web.Controllers
                 var nuevaBitacora = new bitacora
                 {
                     atencion_id = nuevaAtencion.id,
-                    descripcion = "Reserva de hora a través del portal.",
+                    descripcion = viewModel.Observaciones,
                     created_at = DateTime.Now,
-                    tipo = "Cliente",
+                    tipo = "Reserva desde el portal.",
                 };
                 _db.bitacora.Add(nuevaBitacora);
                 await _db.SaveChangesAsync();
