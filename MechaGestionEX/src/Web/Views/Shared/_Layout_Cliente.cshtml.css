@@ -1,4 +1,4 @@
-﻿html, body {
+﻿﻿html, body {
     height: 100%;
     margin: 0;
     padding: 0;
@@ -54,14 +54,60 @@ button.accept-policy {
     line-height: 60px;
 }
 
+#chatHistory {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    overflow-y: auto;
+    max-height: 400px; /* Limit height for scrolling */
+}
+
 .user-message {
-    text-align: right;
-    color: blue;
+    align-self: flex-end;
+    background-color: #0d6efd; /* Bootstrap primary blue */
+    color: white;
+    border-radius: 15px 15px 0 15px;
+    padding: 8px 12px;
+    margin: 5px 0;
+    max-width: 75%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .assistant-message {
-    text-align: left;
-    color: green;
+    align-self: flex-start;
+    background-color: #198754; /* Bootstrap success green */
+    color: white;
+    border-radius: 15px 15px 15px 0;
+    padding: 8px 12px;
+    margin: 5px 0;
+    max-width: 75%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.system-message { /* For errors */
+    align-self: center;
+    background-color: #dc3545; /* Bootstrap danger red */
+    color: white;
+    border-radius: 15px;
+    padding: 8px 12px;
+    margin: 5px 0;
+    max-width: 75%;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+}
+
+#chatInput {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+#sendChat {
+    flex-shrink: 0;
 }
 
 .offcanvas {

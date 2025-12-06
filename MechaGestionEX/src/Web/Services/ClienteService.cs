@@ -124,8 +124,10 @@ namespace Web.Services
                 cliente_id = clienteId,
                 vehiculo_id = model.VehiculoId,
                 taller_id = 1,
+                administrativo_id = 2,
                 agenda = nuevaAgenda,
-                estado = "Solicitud pendiente"
+                estado = "Solicitud pendiente",
+                kilometraje_ingreso = 0
             };
 
             _db.atencion.Add(nuevaAtencion);

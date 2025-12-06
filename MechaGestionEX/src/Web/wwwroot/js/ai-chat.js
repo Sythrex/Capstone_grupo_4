@@ -5,6 +5,10 @@
         appendMessage('Tú: ' + message, 'user');
         $('#chatInput').val('');
 
+        var loadingId = 'loading-' + Date.now();
+        $('#chatHistory').append(`<div id="${loadingId}" class="mb-2 assistant-message">Cargando... <div class="spinner-border spinner-border-sm" role="status"></div></div>`);
+        $('#chatHistory').scrollTop($('#chatHistory')[0].scrollHeight);
+
         $.ajax({
             url: '/ai-assistant/chat',
             type: 'POST',
@@ -12,10 +16,12 @@
             data: JSON.stringify({ userMessage: message }),
             dataType: 'json',
             success: function (response) {
+                $(`#${loadingId}`).remove();
                 appendMessage('Asistente: ' + response.reply, 'assistant');
             },
             error: function (xhr, status, error) {
-                console.error('Chat error:', xhr.responseText); 
+                $(`#${loadingId}`).remove();
+                console.error('Chat error:', xhr.responseText);
                 appendMessage('Error: ' + (xhr.responseJSON?.title || 'No se pudo conectar. Verifica la consola.'), 'system');
             }
         });
